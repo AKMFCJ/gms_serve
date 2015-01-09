@@ -42,9 +42,9 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'git-serve = git-serve.serve:Main.run',
-            'git-serve-run-hook = git-serve.run_hook:Main.run',
-            'git-serve-init = git-serve.init:Main.run',
+            'git-server = git_serve.serve:Main.run',
+            #'git-serve-run-hook = git-serve.run_hook:Main.run',
+            #'git-serve-init = git-serve.init:Main.run',
         ],
     },
 

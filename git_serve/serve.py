@@ -7,7 +7,7 @@ import logging
 import os
 import sys
 
-from app import App
+from git_serve.app import App
 
 
 logger = logging.getLogger('git-server')
