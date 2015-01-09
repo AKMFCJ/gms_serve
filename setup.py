@@ -24,7 +24,7 @@ setup(
     version="0.1",
     packages=find_packages(),
 
-    autho="changjie.fan",
+    author="changjie.fan",
     author_email="changjie.fan@tinno.com",
     description="software for hosting git repositories permission",
     long_description="""
