@@ -8,7 +8,7 @@ import os
 import sys
 
 from git_serve.app import App
-
+from git_serve.access import have_read_access, have_write_access
 
 logger = logging.getLogger('git-server')
 
@@ -40,14 +40,14 @@ class AccessDenied(ServingError):
 
 
 class WriteAccessDenied(AccessDenied):
-    """Repository write access denied"""
+    """没有仓库的写权限"""
 
 
 class ReadAccessDenied(AccessDenied):
-    """Repository read access denied"""
+    """没有仓库的读权限"""
 
 
-def serve(user, command, ):
+def serve(cfg, user, command, ):
     """仓库级权限控制"""
     if '\n' in command:
         raise CommandMayNotContainNewlineError()
@@ -69,14 +69,24 @@ def serve(user, command, ):
     if verb not in COMMANDS_WRITE and verb not in COMMANDS_READONLY:
         raise UnknownCommandError()
 
-    logging.warning('user:%s' % user)
-    logging.warning('verb:%s' % verb)
-    logging.warning('args:%s' % args)
+    repo_path = args.strip("'")
 
-    full_path = os.path.join('repositories', args.strip("'"))
-    logging.warning(full_path)
+    #判断读写权限
+    if verb in COMMANDS_READONLY:
+        if not have_read_access(cfg, user, repo_path):
+            raise ReadAccessDenied()
+    elif verb in COMMANDS_WRITE:
+        if not have_write_access(cfg, user, repo_path):
+            raise WriteAccessDenied()
+
+    logger.warning('user:%s' % user)
+    logger.warning('verb:%s' % verb)
+    logger.warning('args:%s' % args)
+
+    full_path = os.path.join('repositories', repo_path)
+    logger.warning(full_path)
     new_cmd = "%(verb)s '%(path)s'" % dict(verb=verb, path=full_path,)
-    logging.warning('new_cmd:%s' % new_cmd)
+    logger.warning('new_cmd:%s' % new_cmd)
 
     return user, new_cmd, full_path
 
@@ -88,7 +98,7 @@ class Main(App):
         parser.set_description('Allow restricted git operations under DIR')
         return parser
 
-    def handle_args(self, options, args):
+    def handle_args(self, parser, cfg, options, args):
         try:
             (user,) = args
         except ValueError:
@@ -100,9 +110,9 @@ class Main(App):
             sys.exit(1)
 
         try:
-            user, git_cmd, repo_path = serve(user=user, command=ssh_cmd,)
+            user, git_cmd, repo_path = serve(cfg=cfg, user=user, command=ssh_cmd,)
         except ServingError, e:
-            logging.error('%s', e)
+            logger.error('%s', e)
             sys.exit(1)
 
         logging.debug('Serving %s', git_cmd)
