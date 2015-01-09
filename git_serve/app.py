@@ -8,7 +8,7 @@ import optparse
 logger = logging.getLogger('git-server')
 
 
-class App():
+class App(object):
     name = None
 
     def run(class_):
