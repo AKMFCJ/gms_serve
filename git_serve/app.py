@@ -9,14 +9,12 @@ logger = logging.getLogger('git-server')
 
 
 class App():
+    name = None
 
-    def __init__(self, name):
-        self.name = name
-
-    @staticmethod
     def run(class_):
         app = class_()
         return app.main()
+    run = classmethod(run)
 
     def main(self):
         self.setup_logging()
@@ -24,7 +22,7 @@ class App():
         (options, args) = parser.parse_args()
         self.handle_args(options, args)
 
-    def setup_logging(self, log_level='warning'):
+    def setup_logging(self, log_level='WARNING'):
         logging.root.setLevel(log_level)
 
     def create_parser(self):
