@@ -32,7 +32,7 @@ class App(object):
     run = classmethod(run)
 
     def main(self):
-
+        self.setup_basic_logging()
         parser = self.create_parser()
         (options, args) = parser.parse_args()
         cfg = self.create_config(options)
@@ -44,6 +44,9 @@ class App(object):
         self.setup_logging(cfg)
         self.handle_args(parser, cfg, options, args)
 
+    def setup_basic_logging(self):
+        logging.basicConfig()
+
     def setup_logging(self, cfg):
         """初始化日志配置"""
 
@@ -51,11 +54,10 @@ class App(object):
         formatter = logging.Formatter("%(asctime)s %(filename)s %(levelname)s %(message)s")
         handler = logging.FileHandler(os.path.expanduser('~/.git-server/logs/%s' % log_file_name))
         handler.setFormatter(formatter)
+        logging.root.addHandler(handler)
 
-        logger = logging.getLogger('git-serve')
-        logger.addHandler(handler)
         log_level = cfg.get('log', 'log_level')
-        logger.setLevel(log_level)
+        logging.root.setLevel(log_level)
 
 
     def create_config(self, options):
