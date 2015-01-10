@@ -7,8 +7,9 @@ import sys
 import optparse
 import errno
 import ConfigParser
+import time
 
-logger = logging.getLogger('git-server')
+logger = logging.getLogger('git-serve')
 
 
 class CannotReadConfigError(Exception):
@@ -31,7 +32,7 @@ class App(object):
     run = classmethod(run)
 
     def main(self):
-        self.setup_logging()
+
         parser = self.create_parser()
         (options, args) = parser.parse_args()
         cfg = self.create_config(options)
@@ -40,10 +41,22 @@ class App(object):
         except CannotReadConfigError, e:
             logger.error(str(e))
             sys.exit(1)
+        self.setup_logging(cfg)
         self.handle_args(parser, cfg, options, args)
 
-    def setup_logging(self, log_level='WARNING'):
-        logging.root.setLevel(log_level)
+    def setup_logging(self, cfg):
+        """初始化日志配置"""
+
+        log_file_name = time.strftime('%Y-%m-%d', time.localtime())+'_log.txt'
+        formatter = logging.Formatter("%(asctime)s %(filename)s %(levelname)s %(message)s")
+        handler = logging.FileHandler(os.path.expanduser('~/.git-server/logs/%s' % log_file_name))
+        handler.setFormatter(formatter)
+
+        logger = logging.getLogger('git-serve')
+        logger.addHandler(handler)
+        log_level = cfg.get('log', 'log_level')
+        logger.setLevel(log_level)
+
 
     def create_config(self, options):
         cfg = ConfigParser.RawConfigParser()
@@ -51,20 +64,20 @@ class App(object):
 
     def read_config(self, options, cfg):
         try:
-            conffile = file(options.config)
+            conf_file = file(options.config)
         except (IOError, OSError), e:
             if e.errno == errno.ENOENT:
                 raise ConfigFileDoesNotExistError(str(e))
             else:
                 raise CannotReadConfigError(str(e))
         try:
-            cfg.readfp(conffile)
+            cfg.readfp(conf_file)
         finally:
-            conffile.close()
+            conf_file.close()
 
     def create_parser(self):
         parser = optparse.OptionParser()
-        parser.set_defaults(config=os.path.expanduser('~/.git-serve.conf'), )
+        parser.set_defaults(config=os.path.expanduser('~/.git-serve/git-serve.conf'), )
         parser.add_option('--config', metavar='FILE', help='read config from FILE', )
         return parser
 

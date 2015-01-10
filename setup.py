@@ -59,7 +59,7 @@ setup(
         # hook, this will make gitosis-admin settings not update
         # (fixed in 0.6c5, maybe earlier)
         'setuptools>=0.6c5',
-        'MySQLdb>=1.2.3',
+        #'MySQLdb>=1.2.3',
     ],
 )
 
