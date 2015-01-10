@@ -109,7 +109,7 @@ class Main(App):
         if ssh_cmd is None:
             logging.error('Need SSH_ORIGINAL_COMMAND in environment.')
             sys.exit(1)
-
+        repo_path = ''
         try:
             user, git_cmd, repo_path = serve(cfg=cfg, user=user, command=ssh_cmd,)
         except ServingError, e:
