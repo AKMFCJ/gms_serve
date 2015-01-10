@@ -113,7 +113,7 @@ class Main(App):
         try:
             user, git_cmd, repo_path = serve(cfg=cfg, user=user, command=ssh_cmd,)
         except ServingError, e:
-            logger.error(u'\033[43;31;5m %s:%s\033[0m' % (user, e))
+            logger.error(u'\033[43;31;1m %s:%s\033[0m' % (user, e))
             sys.exit(1)
 
         logging.debug('Serving %s', git_cmd)
