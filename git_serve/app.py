@@ -55,7 +55,7 @@ class App(object):
         log_file = os.path.expanduser('~/.git-serve/logs/%s' % log_file_name)
         if not os.path.exists(log_file):
             open(log_file, 'w').close()
-        handler = logging.FileHandler()
+        handler = logging.FileHandler(log_file)
         handler.setFormatter(formatter)
         logging.root.addHandler(handler)
 
