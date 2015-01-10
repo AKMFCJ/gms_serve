@@ -52,7 +52,7 @@ class App(object):
 
         log_file_name = time.strftime('%Y-%m-%d', time.localtime())+'_log.txt'
         formatter = logging.Formatter("%(asctime)s %(filename)s %(levelname)s %(message)s")
-        log_file = os.path.expanduser('~/.git-server/logs/%s' % log_file_name)
+        log_file = os.path.expanduser('~/.git-serve/logs/%s' % log_file_name)
         if not os.path.exists(log_file):
             open(log_file, 'w').close()
         handler = logging.FileHandler()
