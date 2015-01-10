@@ -36,14 +36,18 @@ class DBConnect():
 def have_read_access(cfg, user, path):
     """判断是否有读权限"""
 
-    db_connect = DBConnect()
+    db_connect = DBConnect(cfg.get('database', 'hostname'), cfg.get('database', 'db_name'),
+                           cfg.get('database', 'username'), cfg.get('database', 'password'),
+                           cfg.get('database', 'charset'))
     return False
 
 
 def have_write_access(cfg, user, path):
     """判断是否有写权限"""
 
-    db_connect = DBConnect()
+    db_connect = DBConnect(cfg.get('database', 'hostname'), cfg.get('database', 'db_name'),
+                           cfg.get('database', 'username'), cfg.get('database', 'password'),
+                           cfg.get('database', 'charset'))
     return False
 
 
