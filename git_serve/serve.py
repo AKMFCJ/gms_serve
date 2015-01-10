@@ -20,7 +20,7 @@ class ServingError(Exception):
     """Serving error"""
 
     def __str__(self):
-        return u'%s' % self.__doc__
+        return u"%s" % unicode(self.__doc__, 'utf-8')
 
 
 class CommandMayNotContainNewlineError(ServingError):
@@ -49,6 +49,7 @@ class ReadAccessDenied(AccessDenied):
 
 def serve(cfg, user, command, ):
     """仓库级权限控制"""
+
     if '\n' in command:
         raise CommandMayNotContainNewlineError()
 
@@ -112,7 +113,7 @@ class Main(App):
         try:
             user, git_cmd, repo_path = serve(cfg=cfg, user=user, command=ssh_cmd,)
         except ServingError, e:
-            logger.error('%s', e)
+            logger.error(u'%s:%s', (e, user))
             sys.exit(1)
 
         logging.debug('Serving %s', git_cmd)
