@@ -53,12 +53,22 @@ def have_read_access(cfg, user, repo_path):
     return False
 
 
-def have_write_access(cfg, user, path, reference_name):
+def have_write_access(cfg, user, repo_path):
     """判断是否有写权限"""
 
-    db_connect = DBConnect(cfg.get('database', 'hostname'), cfg.get('database', 'db_name'),
-                           cfg.get('database', 'username'), cfg.get('database', 'password'),
-                           cfg.get('database', 'charset'))
+    db_connect = DBConnect(cfg)
+
+    query_sql = "select wild.repository_wild from repository_wild as wild join repository_permission as repo " \
+                "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \
+                "on member.repositorypermission_id = repo.id JOIN repository_user as git_user " \
+                "on member.gituser_id=git_user.id where git_user.name='%s' and repo.permission='RW'" % user
+
+    repository_wild = [tmp[0]for tmp in db_connect.execute_query(query_sql)]
+    logger.warning(repository_wild)
+    logging.warning(repo_path)
+    for tmp in repository_wild:
+        if repo_path.startswith(tmp) or repo_path == tmp:
+            return True
     return False
 
 
