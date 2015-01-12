@@ -8,17 +8,7 @@ from MySQLdb import connect
 
 class DBConnect():
     def __init__(self, host, db, username, password, charset='utf8'):
-        self.host = host
-        self.db = db
-        self.user = username
-        self.passwd = password
-        self.charset = charset
-        self.conn = None
-        self.cursor = None
-
-    def db_conect(self):
-        """连接权限配置的数据库"""
-        self.conn = connect(host=self.host, db=self.db, user=self.user, passwd=self.passwd, charset=self.charset)
+        self.conn = connect(host=host, db=db, user=username, passwd=password, charset=charset)
         self.cursor = self.conn.cursor()
 
     def db_close(self):
@@ -43,6 +33,7 @@ def have_read_access(cfg, user, repo_path):
     db_connect = DBConnect(cfg.get('database', 'hostname'), cfg.get('database', 'db_name'),
                            cfg.get('database', 'username'), cfg.get('database', 'password'),
                            cfg.get('database', 'charset'))
+
     query_sql = "select wild.repository_wild from repository_wild as wild join repository_permission as repo " \
                 "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \
                 "on member.repositorypermission_id = repo.id JOIN repository_user as git_user " \
