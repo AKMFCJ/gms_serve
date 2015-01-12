@@ -7,8 +7,12 @@ from MySQLdb import connect
 
 
 class DBConnect():
-    def __init__(self, host, db, username, password, charset='utf8'):
-        self.conn = connect(host=host, db=db, user=username, passwd=password, charset=charset)
+    def __init__(self, cfg):
+        self.conn = connect(host=cfg.get('database', 'hostname').strip("'"),
+                            db=cfg.get('database', 'db_name').strip("'"),
+                            user=cfg.get('database', 'username').strip("'"),
+                            passwd=cfg.get('database', 'password').strip("'"),
+                            charset=cfg.get('database', 'charset').strip("'"))
         self.cursor = self.conn.cursor()
 
     def db_close(self):
@@ -30,9 +34,7 @@ def have_read_access(cfg, user, repo_path):
     2. 获取当前用户的所有可读权限的仓库
     """
 
-    db_connect = DBConnect(cfg.get('database', 'hostname'), cfg.get('database', 'db_name'),
-                           cfg.get('database', 'username'), cfg.get('database', 'password'),
-                           cfg.get('database', 'charset'))
+    db_connect = DBConnect(cfg)
 
     query_sql = "select wild.repository_wild from repository_wild as wild join repository_permission as repo " \
                 "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \
