@@ -3,7 +3,10 @@ __author__ = 'changjie.fan'
 """
 从数据库中读取当前用户操作的仓库是否有对应的权限
 """
+import logging
 from MySQLdb import connect
+
+logger = logging.getLogger('git-serve')
 
 
 class DBConnect():
@@ -42,6 +45,8 @@ def have_read_access(cfg, user, repo_path):
                 "on member.gituser_id=git_user.id where git_user.name='%s'" % user
 
     repository_wild = [tmp[0]for tmp in db_connect.execute_query(query_sql)]
+    logger.warning(repository_wild)
+    logging.warning(repo_path)
     for tmp in repository_wild:
         if repo_path.startswith(tmp) or repo_path == tmp:
             return True
