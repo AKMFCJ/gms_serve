@@ -33,16 +33,28 @@ class DBConnect():
         return self.cursor.execute(sql)
 
 
-def have_read_access(cfg, user, path):
-    """判断是否有读权限"""
+def have_read_access(cfg, user, repo_path):
+    """
+    判断是否有读权限
+    1. 判断仓库是否设置了R=@All的权限，所有可读
+    2. 获取当前用户的所有可读权限的仓库
+    """
 
     db_connect = DBConnect(cfg.get('database', 'hostname'), cfg.get('database', 'db_name'),
                            cfg.get('database', 'username'), cfg.get('database', 'password'),
                            cfg.get('database', 'charset'))
+    query_sql = "select wild.repository_wild from repository_wild as wild join repository_permission as repo " \
+                "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \
+                "on member.repositorypermission_id = repo.id JOIN repository_user as git_user " \
+                "on member.gituser_id=git_user.id where git_user.name='%s'" % user
+    repository_wild = db_connect.execute_query(query_sql).fetchall()
+    for tmp in repository_wild:
+        if repo_path.startswith(tmp) or repo_path == tmp:
+            return True
     return False
 
 
-def have_write_access(cfg, user, path):
+def have_write_access(cfg, user, path, reference_name):
     """判断是否有写权限"""
 
     db_connect = DBConnect(cfg.get('database', 'hostname'), cfg.get('database', 'db_name'),
