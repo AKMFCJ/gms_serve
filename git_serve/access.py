@@ -23,8 +23,8 @@ class DBConnect():
 
     def execute_query(self, sql=''):
         """执行查询语句"""
-
-        return self.cursor.execute(sql)
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
 
 
 def have_read_access(cfg, user, repo_path):
@@ -40,8 +40,8 @@ def have_read_access(cfg, user, repo_path):
                 "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \
                 "on member.repositorypermission_id = repo.id JOIN repository_user as git_user " \
                 "on member.gituser_id=git_user.id where git_user.name='%s'" % user
-    db_connect.execute_query(query_sql)
-    repository_wild = db_connect.cursor.fetchall()
+
+    repository_wild = [tmp[0]for tmp in db_connect.execute_query(query_sql)]
     for tmp in repository_wild:
         if repo_path.startswith(tmp) or repo_path == tmp:
             return True

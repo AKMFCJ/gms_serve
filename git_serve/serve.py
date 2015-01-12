@@ -10,7 +10,7 @@ import sys
 from git_serve.app import App
 from git_serve.access import have_read_access, have_write_access
 
-logger = logging.getLogger('git-server')
+logger = logging.getLogger('git-serve')
 
 COMMANDS_READONLY = ['git-upload-pack', 'git upload-pack', ]
 COMMANDS_WRITE = ['git-receive-pack', 'git receive-pack', ]
