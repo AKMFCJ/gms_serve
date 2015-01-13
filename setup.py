@@ -52,6 +52,7 @@ setup(
     },
 
     package_data={
+        'git_serve.conf': subdir_contents('git-serve.conf'),
     },
 
     # templates need to be a real directory, for git init
