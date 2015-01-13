@@ -72,6 +72,7 @@ def serve(cfg, user, command, ):
 
     repo_path = args.strip("'")
 
+    logger.warning('verb:%s' % verb)
     #判断读写权限
     if verb in COMMANDS_READONLY:
         if not have_read_access(cfg, user, repo_path):
