@@ -10,12 +10,8 @@ logger = logging.getLogger('git-serve')
 
 
 class DBConnect():
-    def __init__(self, cfg):
-        self.conn = connect(host=cfg.get('database', 'hostname').strip("'"),
-                            db=cfg.get('database', 'db_name').strip("'"),
-                            user=cfg.get('database', 'username').strip("'"),
-                            passwd=cfg.get('database', 'password').strip("'"),
-                            charset=cfg.get('database', 'charset').strip("'"))
+    def __init__(self, host, db, user, password, charset):
+        self.conn = connect(host=host, db=db, user=user, passwd=password, charset=charset)
         self.cursor = self.conn.cursor()
 
     def db_close(self):
@@ -37,7 +33,11 @@ def have_read_access(cfg, user, repo_path):
     2. 获取当前用户的所有可读权限的仓库
     """
 
-    db_connect = DBConnect(cfg)
+    db_connect = DBConnect(cfg.get('database', 'hostname').strip("'"),
+                           cfg.get('database', 'db_name').strip("'"),
+                           cfg.get('database', 'username').strip("'"),
+                           cfg.get('database', 'password').strip("'"),
+                           cfg.get('database', 'charset').strip("'"))
 
     query_sql = "select wild.repository_wild from repository_wild as wild join repository_permission as repo " \
                 "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \
@@ -56,7 +56,11 @@ def have_read_access(cfg, user, repo_path):
 def have_write_access(cfg, user, repo_path):
     """判断是否有仓库的写权限"""
 
-    db_connect = DBConnect(cfg)
+    db_connect = DBConnect(cfg.get('database', 'hostname').strip("'"),
+                           cfg.get('database', 'db_name').strip("'"),
+                           cfg.get('database', 'username').strip("'"),
+                           cfg.get('database', 'password').strip("'"),
+                           cfg.get('database', 'charset').strip("'"))
 
     query_sql = "select wild.repository_wild from repository_wild as wild join repository_permission as repo " \
                 "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \
@@ -72,10 +76,11 @@ def have_write_access(cfg, user, repo_path):
     return False
 
 
-def have_reference_write_access(cfg, user, reference_name, repo_path):
+def have_reference_write_access(db_host, db_name, db_username, db_password, db_charset,
+                                user, reference_name, repo_path):
     """判断是否有仓库具体引用的写权限"""
 
-    db_connect = DBConnect(cfg)
+    db_connect = DBConnect(db_host, db_name, db_username, db_password, db_charset)
 
     query_sql = "select wild.repository_wild from repository_wild as wild join repository_permission as repo " \
                 "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \

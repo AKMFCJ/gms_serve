@@ -73,11 +73,13 @@ def serve(cfg, user, command, ):
     repo_path = args.strip("'")
 
     logger.warning('verb:%s' % verb)
+    is_write = False
     #判断读写权限
     if verb in COMMANDS_READONLY:
         if not have_read_access(cfg, user, repo_path):
             raise ReadAccessDenied()
     elif verb in COMMANDS_WRITE:
+        is_write = True
         if not have_write_access(cfg, user, repo_path):
             raise WriteAccessDenied()
 
@@ -90,7 +92,7 @@ def serve(cfg, user, command, ):
     new_cmd = "%(verb)s '%(path)s'" % dict(verb=verb, path=full_path,)
     logger.warning('new_cmd:%s' % new_cmd)
 
-    return user, new_cmd, full_path
+    return user, new_cmd, full_path, is_write
 
 
 class Main(App):
@@ -112,14 +114,24 @@ class Main(App):
             sys.exit(1)
 
         try:
-            user, git_cmd, repo_path = serve(cfg=cfg, user=user, command=ssh_cmd,)
+            user, git_cmd, repo_path, is_write = serve(cfg=cfg, user=user, command=ssh_cmd,)
         except ServingError, e:
             logger.error(u'\033[43;31;1m %s:%s\033[0m' % (user, e))
             sys.exit(1)
 
-        logging.debug('Serving %s', git_cmd)
-        os.putenv('git_user', user)
-        os.putenv('repo_path', repo_path)
+        #提交操作时,设置环境变量供hook/update 判断项目级权限使用
+        if is_write:
+            #提交的用户名称, 配置在~/.ssh/authorized_keys中
+            os.putenv('git_user', user)
+            #提交仓库的相对路径, 从repositories/开始
+            os.putenv('repo_path', repo_path)
+            #存在权限设置的数据库访问信息
+            os.putenv('db_host', cfg.get('database', 'hostname').strip("'"))
+            os.putenv('db_name', cfg.get('database', 'db_name').strip("'"))
+            os.putenv('db_username', cfg.get('database', 'username').strip("'"))
+            os.putenv('db_password', cfg.get('database', 'password').strip("'"))
+            os.putenv('db_charset', cfg.get('database', 'charset').strip("'"))
+
         os.execvp('git', ['git', 'shell', '-c', git_cmd])
         logging.error('Cannot execute git-shell.')
         sys.exit(1)
