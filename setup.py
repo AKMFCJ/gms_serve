@@ -42,9 +42,11 @@ setup(
 
     entry_points={
         'console_scripts': [
+            #ssh连接是运行的程序
             'git-serve = git_serve.serve:Main.run',
             #'git-serve-run-hook = git-serve.run_hook:Main.run',
-            #'git-serve-init = git-serve.init:Main.run',
+            #服务器上git-serve初始化
+            'git-serve-init = git-serve.init:Main.run',
         ],
     },
 
