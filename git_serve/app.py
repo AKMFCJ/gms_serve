@@ -62,7 +62,6 @@ class App(object):
         log_level = cfg.get('log', 'log_level')
         logging.root.setLevel(log_level)
 
-
     def create_config(self, options):
         cfg = ConfigParser.RawConfigParser()
         return cfg

@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#-*- encoding:utf-8 -*-
 from setuptools import setup, find_packages
 import os
 
@@ -46,7 +47,7 @@ setup(
             'git-serve = git_serve.serve:Main.run',
             #'git-serve-run-hook = git-serve.run_hook:Main.run',
             #服务器上git-serve初始化
-            'git-serve-init = git-serve.init:Main.run',
+            'git-serve-init = git_serve.init:Main.run',
         ],
     },
 
