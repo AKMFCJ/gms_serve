@@ -1,6 +1,11 @@
 #!/usr/bin/python
 #-*- encoding:utf-8 -*-
+import os
 from setuptools import setup, find_packages
+
+
+def data_files():
+    return [os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-serve.conf')]
 
 setup(
     name="git-serve",
@@ -37,6 +42,7 @@ setup(
 
     },
 
+    datafiles=data_files(),
     # templates need to be a real directory, for git init
     zip_safe=False,
 
