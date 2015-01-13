@@ -28,7 +28,7 @@ class Main(object):
         if not os.path.exists(git_serve_dir):
             util.mk_dir(git_serve_dir)
             util.mk_dir(os.path.join(git_serve_dir, 'logs'))
-            rfp = open('../git-serve.conf')
+            rfp = open('../conf/git-serve.conf')
             wfp = open(os.path.join(git_serve_dir, 'git-serve.conf'), 'w')
             for line in rfp.readline():
                 wfp.write(line+'\n')
