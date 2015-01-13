@@ -35,8 +35,9 @@ print git_user
 print repo_path
 print sys.argv
 
-if have_reference_write_access(db_host, db_name, db_username, db_password, db_charset, git_user, refname, repo_path):
+if have_reference_write_access(db_host, db_name, db_username, db_password, db_charset,
+                               git_user, reference_name, repo_path):
     sys.exit(1)
 else:
-    print u"%s: 没有提交权限" % git_user
+    print "\033[43;31;1m %s:%s\033[0m" % (git_user, "没有提交权限")
     sys.exit(1)

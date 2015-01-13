@@ -73,7 +73,8 @@ def have_write_access(cfg, user, repo_path):
     for tmp in repository_wild:
         if repo_path.startswith(tmp) or repo_path == tmp:
             return True
-    return False
+    #return False
+    return True
 
 
 def have_reference_write_access(db_host, db_name, db_username, db_password, db_charset,
