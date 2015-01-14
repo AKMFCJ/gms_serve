@@ -1,17 +1,14 @@
 #!/usr/bin/python
 #-*- encoding:utf-8 -*-
-import os
 from setuptools import setup, find_packages
-
-
-def data_files():
-    return [os.path.join(os.path.dirname(os.path.abspath(__file__)), 'git-serve.conf')]
 
 setup(
     name="git-serve",
     version="0.1",
     packages=find_packages(),
-
+    package_data={
+        '': ['*.conf'],
+    },
     author="changjie.fan",
     author_email="changjie.fan@tinno.com",
     description="software for hosting git repositories permission",
@@ -38,12 +35,6 @@ setup(
         ],
     },
 
-    package_data={
-
-    },
-
-    datafiles=data_files(),
-    # templates need to be a real directory, for git init
     zip_safe=False,
 
     install_requires=[
