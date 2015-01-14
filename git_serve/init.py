@@ -22,7 +22,7 @@ class Main(object):
             util.mk_dir(os.path.expanduser('~/.ssh'), 0700)
         else:
             if os.path.exists(os.path.join(ssh, 'authorized_keys')):
-                ssh_fp = open(os.path.exists(os.path.join(ssh, 'authorized_keys')), 'r')
+                ssh_fp = open(os.path.join(ssh, 'authorized_keys'), 'r')
                 if not ssh_fp.readline().startswith("###git-serve Don't Edit"):
                     ssh_fp.close()
                     os.rename(os.path.join(ssh, 'authorized_keys'), os.path.join(ssh, 'authorized_keys_old'))
