@@ -39,7 +39,7 @@ class Main(object):
             util.mk_dir(git_serve_dir)
             util.mk_dir(os.path.join(git_serve_dir, 'logs'))
             rfp = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                    'git_serve/git-serve.conf'))
+                                    'git_serve/git-serve.conf'), 'r')
             wfp = open(os.path.join(git_serve_dir, 'git-serve.conf'), 'w')
             for line in rfp.readline():
                 wfp.write(line+'\n')
