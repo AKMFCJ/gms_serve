@@ -26,11 +26,11 @@ class Main(object):
                 if not ssh_fp.readline().startswith("###git-serve Don't Edit"):
                     ssh_fp.close()
                     os.rename(os.path.join(ssh, 'authorized_keys'), os.path.join(ssh, 'authorized_keys_old'))
-                    ssh_fp = open(os.path.exists(os.path.join(ssh, 'authorized_keys')), 'w')
+                    ssh_fp = open(os.path.join(ssh, 'authorized_keys'), 'w')
                     ssh_fp.write("###git-serve Don't Edit\n")
                     ssh_fp.close()
             else:
-                ssh_fp = open(os.path.exists(os.path.join(ssh, 'authorized_keys')), 'w')
+                ssh_fp = open(os.path.join(ssh, 'authorized_keys'), 'w')
                 ssh_fp.write("###git-serve Don't Edit\n")
                 ssh_fp.close()
 
