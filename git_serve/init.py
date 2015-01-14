@@ -41,7 +41,7 @@ class Main(object):
             rfp = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                                     'git_serve/git-serve.conf'), 'r')
             wfp = open(os.path.join(git_serve_dir, 'git-serve.conf'), 'w')
-            for line in rfp.readline():
-                wfp.write(line+'\n')
+            for line in rfp.readlines():
+                wfp.write(line)
             wfp.close()
             rfp.close()
