@@ -22,7 +22,17 @@ class Main(object):
             util.mk_dir(os.path.expanduser('~/.ssh'), 0700)
         else:
             if os.path.exists(os.path.join(ssh, 'authorized_keys')):
-                os.rename(os.path.join(ssh, 'authorized_keys'), os.path.join(ssh, 'authorized_keys_old'))
+                ssh_fp = open(os.path.exists(os.path.join(ssh, 'authorized_keys')), 'r')
+                if not ssh_fp.readline().startswith("###git-serve Don't Edit"):
+                    ssh_fp.close()
+                    os.rename(os.path.join(ssh, 'authorized_keys'), os.path.join(ssh, 'authorized_keys_old'))
+                    ssh_fp = open(os.path.exists(os.path.join(ssh, 'authorized_keys')), 'w')
+                    ssh_fp.write("###git-serve Don't Edit\n")
+                    ssh_fp.close()
+            else:
+                ssh_fp = open(os.path.exists(os.path.join(ssh, 'authorized_keys')), 'w')
+                ssh_fp.write("###git-serve Don't Edit\n")
+                ssh_fp.close()
 
         git_serve_dir = os.path.expanduser('~/.git-serve')
         if not os.path.exists(git_serve_dir):
