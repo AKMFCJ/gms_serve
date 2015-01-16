@@ -8,6 +8,7 @@ setup(
     packages=find_packages(),
     package_data={
         '': ['*.conf'],
+        '': ['*.sh'],
     },
     author="changjie.fan",
     author_email="changjie.fan@tinno.com",
