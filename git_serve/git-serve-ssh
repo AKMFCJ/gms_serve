@@ -1,3 +1,4 @@
 #!/bin/bash
+#用于删除authorized_keys中对用用户的公匙
 read name
 sed -i /$name\",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty/d /home/git/.ssh/authorized_keys
