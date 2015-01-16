@@ -3,7 +3,7 @@ __author__ = 'changjie.fan'
 
 import os
 import logging
-
+import shutil
 import util
 
 logger = logging.getLogger('git-serve')
@@ -45,3 +45,5 @@ class Main(object):
                 wfp.write(line)
             wfp.close()
             rfp.close()
+        shutil.copy(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                    'git_serve/git_serve_ssh.sh'), '/bin/git_serve_ssh')
