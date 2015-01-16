@@ -35,7 +35,7 @@ setup(
             'git-serve-init = git_serve.init:Main.run',
         ],
     },
-
+    scripts=['git_serve/git_serve_ssh'],
     zip_safe=False,
 
     install_requires=[
