@@ -43,5 +43,7 @@ class Main(object):
             wfp = open(os.path.join(git_serve_dir, 'git-serve.conf'), 'w')
             for line in rfp.readlines():
                 wfp.write(line)
+            wfp.write('[localhost]\n')
+            wfp.write('ip=%s\n' % util.get_localhost_ip())
             wfp.close()
             rfp.close()
