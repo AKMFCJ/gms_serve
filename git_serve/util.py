@@ -5,6 +5,9 @@ __author__ = 'changjie.fan'
 """
 import errno
 import os
+import socket
+import fcntl
+import struct
 
 
 def mk_dir(*a, **kw):
@@ -17,8 +20,13 @@ def mk_dir(*a, **kw):
             raise
 
 
-def get_localhost_ip():
+def get_localhost_ip(ifname):
     """获取本机的Ip地址"""
 
-    ip = os.popen("/sbin/ifconfig | grep 'inet addr' | awk '{print $2}'").read()
-    return ip[ip.find(':')+1:ip.find('\n')]
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+print get_localhost_ip("eth0")

@@ -44,6 +44,6 @@ class Main(object):
             for line in rfp.readlines():
                 wfp.write(line)
             wfp.write('[localhost]\n')
-            wfp.write('ip=%s\n' % util.get_localhost_ip())
+            wfp.write('ip=%s\n' % util.get_localhost_ip("eth0"))
             wfp.close()
             rfp.close()
