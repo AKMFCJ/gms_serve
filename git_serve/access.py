@@ -39,11 +39,15 @@ def have_read_access(cfg, user, repo_path):
                            cfg.get('database', 'password').strip("'"),
                            cfg.get('database', 'charset').strip("'"))
 
-    query_sql = "select wild.repository_wild from repository_wild as wild join repository_permission as repo " \
-                "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \
-                "on member.repositorypermission_id = repo.id JOIN repository_user as git_user " \
-                "on member.gituser_id=git_user.id where git_user.name='%s'" % user
-
+    query_sql = \
+        "select username from auth_user where auth_user.username='%s' and auth_user.id " \
+        "in(select git_user.user_id from repository_user git_user where git_user.id in" \
+        "(select member.gituser_id from repository_permission_member member where member.repositorypermission_id " \
+        "in(select repository_permission.id from repository_permission where repository_permission.permission='R' " \
+        "and repository_permission.repository_wild_id " \
+        "in(select wild.id from repository_wild wild JOIN repository_server serve on wild.repository_server_id=serve.id" \
+        "where serve.ip='%s' and wild.repository_wild LIKE '%s%%'))))" % (user, cfg.get('localhost', 'ip'), repo_path)
+    logger.info(query_sql)
     repository_wild = [tmp[0]for tmp in db_connect.execute_query(query_sql)]
     logger.warning(repository_wild)
     logging.warning(repo_path)
