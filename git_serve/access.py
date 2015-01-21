@@ -4,6 +4,7 @@ __author__ = 'changjie.fan'
 从数据库中读取当前用户操作的仓库是否有对应的权限
 """
 import logging
+import os
 from MySQLdb import connect
 
 logger = logging.getLogger('git-serve')
@@ -38,15 +39,15 @@ def have_read_access(cfg, user, repo_path):
                            cfg.get('database', 'username').strip("'"),
                            cfg.get('database', 'password').strip("'"),
                            cfg.get('database', 'charset').strip("'"))
-
+    platform = os.path.dirname(repo_path)
     query_sql = \
         "select username from auth_user where auth_user.username='%s' and auth_user.id " \
         "in(select git_user.user_id from repository_user git_user where git_user.id in" \
         "(select member.gituser_id from repository_permission_member member where member.repositorypermission_id " \
         "in(select repository_permission.id from repository_permission where repository_permission.permission='R' " \
-        "and repository_permission.repository_wild_id " \
-        "in(select wild.id from repository_wild wild JOIN repository_server serve on wild.repository_server_id=serve.id" \
-        "where serve.ip='%s' and wild.repository_wild LIKE '%s%%'))))" % (user, cfg.get('localhost', 'ip'), repo_path)
+        "and repository_permission.repository_wild_id in(select wild.id from repository_wild wild JOIN " \
+        "repository_server serve on wild.repository_server_id=serve.id where serve.ip='%s'and wild.repository_wild " \
+        "LIKE '%s%%'))))" % (user, cfg.get('localhost', 'ip'), platform)
     logger.info(query_sql)
     repository_wild = [tmp[0]for tmp in db_connect.execute_query(query_sql)]
     logger.warning(repository_wild)

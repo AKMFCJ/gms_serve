@@ -29,4 +29,23 @@ def get_localhost_ip(ifname):
         struct.pack('256s', ifname[:15])
     )[20:24])
 
-print get_localhost_ip("eth0")
+
+def dir_name(path, hierarchy):
+    """返回指定层级的目录路径"""
+
+    dirs = path.split('/')
+    result_path = ''
+    if len(dirs) <= hierarchy:
+        return path
+    else:
+        for i in range(hierarchy):
+            if i == 0:
+                result_path = dirs[0]
+            else:
+                result_path = os.path.join(result_path, dirs[i])
+
+    return result_path
+
+
+if __name__ == '__main__':
+    print dir_name('mt6572/platform/build.git', 1)
