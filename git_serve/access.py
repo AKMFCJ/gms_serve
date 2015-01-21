@@ -32,8 +32,9 @@ class DBConnect():
 def have_read_access(cfg, user, repo_path):
     """
     判断是否有读权限
-    1. 判断仓库是否设置了R=@All的权限，所有可读
-    2. 获取当前用户的所有可读权限的仓库
+    1. 判断仓库权限是否有All组
+    2. 判断仓库权限R/RW/RW+权限组的成员中是否有当前用户
+    都是通过仓库根路径的权限控制的
     """
 
     db_connect = DBConnect(cfg.get('database', 'hostname').strip("'"),
@@ -41,20 +42,28 @@ def have_read_access(cfg, user, repo_path):
                            cfg.get('database', 'username').strip("'"),
                            cfg.get('database', 'password').strip("'"),
                            cfg.get('database', 'charset').strip("'"))
+
     platform = util.dir_name(repo_path, 1)
     query_sql = \
-        "select username from auth_user where auth_user.username='%s' and auth_user.id " \
-        "in(select git_user.user_id from repository_user git_user where git_user.id in" \
-        "(select member.gituser_id from repository_permission_member member where member.repositorypermission_id " \
-        "in(select repository_permission.id from repository_permission where repository_permission.permission in " \
-        "('R', 'RW', 'RW+') and repository_permission.repository_wild_id in(select wild.id from repository_wild wild " \
-        "JOIN repository_server serve on wild.repository_server_id=serve.id where serve.ip='%s'and " \
-        "wild.repository_wild LIKE '%s%%'))))" % (user, cfg.get('localhost', 'ip'), platform)
+        "select id from repository_wild where repository_wild='%s' and id in ( SELECT repository_wild_id from " \
+        "repository_permission where repository_permission.id in (SELECT repositorypermission_id from " \
+        "repository_permission_group where gitusergroup_id in(select id from repository_user_group where name='All')))"
     logger.info(query_sql)
-    username = [tmp[0]for tmp in db_connect.execute_query(query_sql)]
-    logger.info(username)
-    if username:
+    if db_connect.execute_query(query_sql):
         return True
+    else:
+        query_sql = \
+            "select username from auth_user where auth_user.username='%s' and auth_user.id " \
+            "in(select git_user.user_id from repository_user git_user where git_user.id in" \
+            "(select member.gituser_id from repository_permission_member member where member.repositorypermission_id " \
+            "in(select repository_permission.id from repository_permission where repository_permission.permission in " \
+            "('R', 'RW', 'RW+') and repository_permission.repository_wild_id in(select wild.id from repository_wild wild " \
+            "JOIN repository_server serve on wild.repository_server_id=serve.id where serve.ip='%s'and " \
+            "wild.repository_wild LIKE '%s%%'))))" % (user, cfg.get('localhost', 'ip'), platform)
+        logger.info(query_sql)
+
+        if db_connect.execute_query(query_sql):
+            return True
     return False
 
 
