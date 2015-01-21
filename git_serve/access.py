@@ -47,7 +47,8 @@ def have_read_access(cfg, user, repo_path):
     query_sql = \
         "select id from repository_wild where repository_wild='%s' and id in ( SELECT repository_wild_id from " \
         "repository_permission where repository_permission.id in (SELECT repositorypermission_id from " \
-        "repository_permission_group where gitusergroup_id in(select id from repository_user_group where name='All')))"
+        "repository_permission_group where gitusergroup_id in(select id from repository_user_group where name='All')))" \
+        % platform
     logger.info(query_sql)
     if db_connect.execute_query(query_sql):
         return True
