@@ -8,7 +8,7 @@ __author__ = 'changjie.fan'
 import sys
 import os
 from git_serve.access import have_reference_write_access
-from util import get_localhost_ip
+from git_serve.util import get_localhost_ip
 
 #从环境变量中读取中在git-serve/serve中设置的环境变量
 #存储权限设置的数据库访问信息
@@ -21,10 +21,10 @@ db_charset = os.getenv('db_charset')
 #当前进行的提交的用户名称
 git_user = os.getenv('git_user')
 #当前提交仓库的相对路径
-repo_path = os.getenv('repo_path')
+repo_path = os.getenv('access_repo_path')
 
 #本地ip地址
-localhost_ip = get_localhost_ip('eth0')
+localhost_ip = os.getenv('localhost_ip')
 
 #git向update钩子传递的参数
 #第一个参数是钩子的相对路径
