@@ -8,6 +8,7 @@ __author__ = 'changjie.fan'
 import sys
 import os
 from git_serve.access import have_reference_write_access
+from util import get_localhost_ip
 
 #从环境变量中读取中在git-serve/serve中设置的环境变量
 #存储权限设置的数据库访问信息
@@ -21,6 +22,9 @@ db_charset = os.getenv('db_charset')
 git_user = os.getenv('git_user')
 #当前提交仓库的相对路径
 repo_path = os.getenv('repo_path')
+
+#本地ip地址
+localhost_ip = get_localhost_ip('eth0')
 
 #git向update钩子传递的参数
 #第一个参数是钩子的相对路径
@@ -36,8 +40,8 @@ print repo_path
 print sys.argv
 
 if have_reference_write_access(db_host, db_name, db_username, db_password, db_charset,
-                               git_user, reference_name, repo_path):
-    sys.exit(1)
+                               git_user, reference_name, repo_path, localhost_ip):
+    sys.exit(0)
 else:
     print "\033[43;31;1m %s:%s\033[0m" % (git_user, "没有提交权限")
     sys.exit(1)

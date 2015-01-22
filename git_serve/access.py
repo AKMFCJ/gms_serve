@@ -75,21 +75,19 @@ def have_write_access(cfg, user, repo_path):
         return False
 
 
-def have_reference_write_access(db_host, db_name, db_username, db_password, db_charset,
-                                user, reference_name, repo_path):
+def have_reference_write_access(hostname, db_name, username, password, charset, user, repo_path,
+                                reference_name, localhost_ip):
     """判断是否有仓库具体引用的写权限"""
 
-    db_connect = DBConnect(db_host, db_name, db_username, db_password, db_charset)
+    db_connect = DBConnect(hostname, db_name, username, password, charset)
 
-    query_sql = "select wild.repository_wild from repository_wild as wild join repository_permission as repo " \
-                "on wild.id=repo.repository_wild_id JOIN repository_permission_member as member " \
-                "on member.repositorypermission_id = repo.id JOIN repository_user as git_user " \
-                "on member.gituser_id=git_user.id where git_user.name='%s' and repo.permission='RW'" % user
-
-    repository_wild = [tmp[0]for tmp in db_connect.execute_query(query_sql)]
-    logger.warning(repository_wild)
-    logging.warning(repo_path)
-    for tmp in repository_wild:
-        if repo_path.startswith(tmp) or repo_path == tmp:
-            return True
-    return False
+    start = time.time()
+    #通过存储过程判断是否有权限
+    db_connect.cursor.callproc('repository_write_reference_access', (user, reference_name, repo_path, localhost_ip))
+    data = db_connect.cursor.fetchall()
+    logger.info(time.time()-start)
+    db_connect.db_close()
+    if data[0][0]:
+        return True
+    else:
+        return False
