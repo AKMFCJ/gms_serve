@@ -72,23 +72,26 @@ def serve(cfg, user, command, ):
 
     repo_path = args.strip("'")
 
-    logger.warning('verb:%s' % verb)
+    #仓库级读写权限判断
+    if repo_path.endswith('.git'):
+        temp_repo_path = repo_path[:-4]
+    else:
+        temp_repo_path = repo_path
     is_write = False
-    #判断读写权限
     if verb in COMMANDS_READONLY:
-        if not have_read_access(cfg, user, repo_path):
+        if not have_read_access(cfg, user, temp_repo_path):
             raise ReadAccessDenied()
     elif verb in COMMANDS_WRITE:
         is_write = True
-        if not have_write_access(cfg, user, repo_path):
+        if not have_write_access(cfg, user, temp_repo_path):
             raise WriteAccessDenied()
 
     logger.warning('user:%s' % user)
     logger.warning('verb:%s' % verb)
     logger.warning('args:%s' % args)
 
+    #仓库绝对路径的拼装
     full_path = os.path.join('repositories', repo_path)
-    logger.warning(full_path)
     new_cmd = "%(verb)s '%(path)s'" % dict(verb=verb, path=full_path,)
     logger.warning('new_cmd:%s' % new_cmd)
 
