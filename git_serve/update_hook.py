@@ -43,5 +43,5 @@ if have_reference_write_access(db_host, db_name, db_username, db_password, db_ch
                                git_user, reference_name, repo_path, localhost_ip):
     sys.exit(0)
 else:
-    print "\033[43;31;1m %s:%s\033[0m" % (git_user, "没有提交权限")
+    print "\033[43;31;1m %s:%s:%s:%s\033[0m" % (git_user, repo_path, reference_name, "没有提交权限")
     sys.exit(1)
