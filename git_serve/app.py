@@ -81,7 +81,7 @@ class App(object):
 
     def create_parser(self):
         parser = optparse.OptionParser()
-        parser.set_defaults(config=os.path.expanduser('~/.git-serve/git-serve.conf'), )
+        parser.set_defaults(config=os.path.expanduser('~/.git-serve/conf/git-serve.conf'), )
         parser.add_option('--config', metavar='FILE', help='read config from FILE', )
         return parser
 

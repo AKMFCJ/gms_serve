@@ -73,7 +73,6 @@ class Main(object):
         src_file_names = os.listdir(src_path)
         dst_path = os.path.expanduser('~/.git-serve/hooks')
         if os.path.exists(dst_path):
-            add_file_names = []
             for src_file_name in src_file_names:
                 src_file = os.path.join(src_path, src_file_name)
                 dst_file = os.path.join(dst_path, src_file_name)
@@ -82,14 +81,11 @@ class Main(object):
                         shutil.copy(src_file, dst_file)
                 else:
                     shutil.copy(src_file, dst_file)
-                    add_file_names.append(src_file_name)
-            if add_file_names:
-                create_hook_link(dst_path, add_file_names, repositories)
         else:
             os.mkdir(dst_path)
             for file_name in src_file_names:
                 shutil.copy(os.path.join(src_path, file_name), dst_path)
-            create_hook_link(dst_path, src_file_names, repositories)
+        create_hook_link(dst_path, src_file_names, repositories)
 
     @staticmethod
     def create_git_serve_conf(git_serve_dir):
