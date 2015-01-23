@@ -93,6 +93,8 @@ class Main(object):
 
     @staticmethod
     def create_git_serve_conf(git_serve_dir):
+            if not os.path.exists(os.path.join(git_serve_dir, 'conf')):
+                os.mkdir(os.path.join(git_serve_dir, 'conf'))
             rfp = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
                                     'git_serve/conf/git-serve.conf'), 'r')
             wfp = open(os.path.join(git_serve_dir, 'conf', 'git-serve.conf'), 'w')

@@ -4,20 +4,21 @@ import os
 from setuptools import setup, find_packages
 
 
-def subdir_contents(path):
+def subdir_contents(path_list):
     all_file = []
-    top_level_path = [os.path.join(path, tmp) for tmp in os.listdir(path)]
-    for child_file in top_level_path:
-        if os.path.isdir(child_file):
-            child_folder = [os.path.join(child_file, tmp) for tmp in os.listdir(child_file)]
-            for tmp in child_folder:
-                if os.path.isdir(tmp):
-                    top_level_path.append(tmp)
-                else:
-                    all_file.append(tmp[tmp.find('/')+1:])
-        else:
-            all_file.append(child_file[child_file.find('/')+1:])
-
+    for path in path_list:
+        top_level_path = [os.path.join(path, tmp) for tmp in os.listdir(path)]
+        for child_file in top_level_path:
+            if os.path.isdir(child_file):
+                child_folder = [os.path.join(child_file, tmp) for tmp in os.listdir(child_file)]
+                for tmp in child_folder:
+                    if os.path.isdir(tmp):
+                        top_level_path.append(tmp)
+                    else:
+                        all_file.append(tmp[tmp.find('/')+1:])
+            else:
+                all_file.append(child_file[child_file.find('/')+1:])
+    print all_file
     return all_file
 
 setup(
@@ -27,8 +28,7 @@ setup(
     package_data={
         '': ['*.conf'],
         '': ['*.sh'],
-        'git_serve': subdir_contents('git_serve/hooks'),
-        'git_serve': subdir_contents('git_serve/conf'),
+        'git_serve': subdir_contents(['git_serve/hooks', 'git_serve/conf']),
     },
     author="changjie.fan",
     author_email="changjie.fan@tinno.com",
