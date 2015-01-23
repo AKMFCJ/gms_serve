@@ -28,6 +28,7 @@ setup(
         '': ['*.conf'],
         '': ['*.sh'],
         'git_serve': subdir_contents('git_serve/hooks'),
+        'git_serve': subdir_contents('git_serve/conf'),
     },
     author="changjie.fan",
     author_email="changjie.fan@tinno.com",

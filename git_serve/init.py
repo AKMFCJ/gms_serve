@@ -50,7 +50,7 @@ class Main(object):
             util.mk_dir(os.path.join(git_serve_dir, 'logs'))
             Main.create_git_serve_conf(git_serve_dir)
         else:
-            git_serve_conf = os.path.join(git_serve_dir, 'git-serve.conf')
+            git_serve_conf = os.path.join(git_serve_dir, 'conf', 'git-serve.conf')
             if os.path.exists(git_serve_conf):
                 cfg = ConfigParser.RawConfigParser()
                 try:
@@ -94,8 +94,8 @@ class Main(object):
     @staticmethod
     def create_git_serve_conf(git_serve_dir):
             rfp = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                    'git_serve/git-serve.conf'), 'r')
-            wfp = open(os.path.join(git_serve_dir, 'git-serve.conf'), 'w')
+                                    'git_serve/conf/git-serve.conf'), 'r')
+            wfp = open(os.path.join(git_serve_dir, 'conf', 'git-serve.conf'), 'w')
             for line in rfp.readlines():
                 wfp.write(line)
             wfp.write('[localhost]\n')
