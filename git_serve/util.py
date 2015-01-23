@@ -50,16 +50,17 @@ def dir_name(path, hierarchy):
 def create_hook_link(hook_path='', hook_name=[], repository_root=''):
     """所有的仓库创建钩子文件的链接"""
 
-    hook_name = os.path.basename(hook_path)
-    repository_list = [tmp for tmp in os.listdir(repository_root) if os.path.isdir(os.path.join(repository_root, tmp))]
+    repository_list = [os.path.isdir(os.path.join(repository_root, tmp))
+                       for tmp in os.listdir(repository_root) if os.path.isdir(os.path.join(repository_root, tmp))]
     for folder_path in repository_list:
         folder_child = os.listdir(folder_path)
         for child in folder_child:
             child_path = os.path.join(folder_path, child)
             if child_path.endswith('.git'):
-                hook_link_path = os.path.join(child_path, 'hooks', hook_name)
-                if not os.path.exists(hook_link_path):
-                    os.symlink(hook_link_path)
+                for hook in hook_name:
+                    hook_link_path = os.path.join(child_path, 'hooks', hook)
+                    if not os.path.exists(hook_link_path):
+                        os.symlink(os.path.join(hook_path, hook), hook_link_path)
             elif os.path.isdir(child_path):
                 repository_list.append(child_path)
 
