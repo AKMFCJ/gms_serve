@@ -70,11 +70,10 @@ class Main(object):
 
         #拷贝hooks目录
         src_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'git_serve/hooks')
-        src_path, src_folder, src_file_names = os.walk(src_path)
+        src_file_names = os.listdir(src_path)
         dst_path = os.path.expanduser('~/.git-serve/hooks')
         if os.path.exists(dst_path):
             add_file_names = []
-            dst_path, dst_folder, dst_file_names = os.walk(dst_path)
             for src_file_name in src_file_names:
                 src_file = os.path.join(src_path, src_file_name)
                 dst_file = os.path.join(dst_path, src_file_name)
