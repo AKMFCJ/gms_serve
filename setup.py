@@ -1,6 +1,24 @@
 #!/usr/bin/python
 #-*- encoding:utf-8 -*-
+import os
 from setuptools import setup, find_packages
+
+
+def _subdir_contents(path):
+    for top_level in os.listdir(path):
+        top_level_path = os.path.join(path, top_level)
+        if not os.path.isdir(top_level_path):
+            continue
+        for dir_path, dir_names, file_names in os.walk(top_level_path):
+            for file_name in dir_path:
+                full_path = os.path.join(dir_path, file_name)
+                if not full_path.startswith(path+'/'):
+                    raise RuntimeError()
+                yield full_path[len(path)+1:]
+
+
+def subdir_contents(path):
+    return list(_subdir_contents(path))
 
 setup(
     name="git-serve",
@@ -9,6 +27,7 @@ setup(
     package_data={
         '': ['*.conf'],
         '': ['*.sh'],
+        'git_serve.update': subdir_contents('git_serve/update'),
     },
     author="changjie.fan",
     author_email="changjie.fan@tinno.com",
