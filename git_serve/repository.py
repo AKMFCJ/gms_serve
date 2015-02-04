@@ -9,8 +9,6 @@ import logging
 import commands
 from optparse import OptionParser
 
-logger = logging.getLogger('git-serve')
-
 
 class Main(object):
     @staticmethod
@@ -38,12 +36,10 @@ class Main(object):
         os.chdir(path)
         (result, info) = commands.getstatusoutput('git init --bare')
         if result:
-            logger.error(info)
             sys.exit(1)
         (result, info) = commands.getstatusoutput('GIT_WORK_TREE=%s git --git-dir="%s"  commit --allow-empty -m "init"'
                                                   % (path, path))
         if result:
-            logger.error(info)
             sys.exit(1)
 
     @staticmethod
@@ -54,7 +50,6 @@ class Main(object):
             (result, info) = commands.getstatusoutput('GIT_WORK_TREE=%s git --git-dir="%s" tag %s ' %
                                                       (path, path, tag_name))
             if result:
-                logger.error(info)
                 sys.exit(1)
 
     @staticmethod
@@ -65,5 +60,4 @@ class Main(object):
             (result, info) = commands.getstatusoutput('GIT_WORK_TREE=%s git --git-dir="%s" branch %s master' %
                                                       (path, path, branch_name))
             if result:
-                logger.error(info)
                 sys.exit(1)
