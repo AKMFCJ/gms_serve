@@ -53,7 +53,7 @@ setup(
             #'git-serve-run-hook = git-serve.run_hook:Main.run',
             #服务器上git-serve初始化
             'git-serve-init = git_serve.init:Main.run',
-            'git-server-repo = git_server.repository:Main.run',
+            'git-serve-repo = git_serve.repository:Main.run',
         ],
     },
     scripts=['git_serve/git-serve-ssh'],
