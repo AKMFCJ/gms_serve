@@ -8,6 +8,10 @@ __author__ = 'changjie.fan'
 import sys
 import os
 from git_serve.access import have_reference_write_access
+from colorama import *
+init(autoreset=True)
+COLOR = [Fore.RED, Fore.GREEN, Fore.BLUE, Fore.BLACK, Fore.YELLOW,
+         Fore.MAGENTA, Fore.CYAN, Fore.WHITE, Fore.RESET]
 
 #从环境变量中读取中在git-serve/serve中设置的环境变量
 #存储权限设置的数据库访问信息
@@ -42,5 +46,5 @@ if have_reference_write_access(db_host, db_name, db_username, db_password, db_ch
                                git_user, reference_name, repo_path, localhost_ip):
     sys.exit(0)
 else:
-    print "\033[43;31;1m %s:%s:%s:%s\033[0m" % (git_user, repo_path, reference_name, "没有提交权限")
+    print Fore.RED+Style.BRIGHT + git_user +":"+ repo_path +":"+ reference_name+"没有提交权限"
     sys.exit(1)
