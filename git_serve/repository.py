@@ -9,6 +9,8 @@ import logging
 import commands
 from optparse import OptionParser
 
+from git_serve.util import  create_repository_hook_link
+
 
 class Main(object):
     @staticmethod
@@ -37,6 +39,11 @@ class Main(object):
         (result, info) = commands.getstatusoutput('git init --bare')
         if result:
             sys.exit(1)
+
+        #创建hooks
+        create_repository_hook_link(path)
+
+        #创建初始化tag和分支
         (result, info) = commands.getstatusoutput('GIT_WORK_TREE=%s git --git-dir="%s"  commit --allow-empty -m "init"'
                                                   % (path, path))
         if result:

@@ -5,28 +5,9 @@ __author__ = 'changjie.fan'
 """
 import logging
 import time
-from MySQLdb import connect
-
-import util
+from util import DBConnect
 
 logger = logging.getLogger('git-serve')
-
-
-class DBConnect():
-    def __init__(self, host, db, user, password, charset):
-        self.conn = connect(host=host, db=db, user=user, passwd=password, charset=charset)
-        self.cursor = self.conn.cursor()
-
-    def db_close(self):
-        """关闭数据库连接"""
-
-        self.cursor.close()
-        self.conn.close()
-
-    def execute_query(self, sql=''):
-        """执行查询语句"""
-        self.cursor.execute(sql)
-        return self.cursor.fetchall()
 
 
 def have_read_access(cfg, user, repo_path):
@@ -75,11 +56,14 @@ def have_write_access(cfg, user, repo_path):
         return False
 
 
-def have_reference_write_access(hostname, db_name, username, password, charset, user, repo_path,
-                                reference_name, localhost_ip):
+def have_reference_write_access(cfg, user, repo_path, reference_name, localhost_ip):
     """判断是否有仓库具体引用的写权限"""
 
-    db_connect = DBConnect(hostname, db_name, username, password, charset)
+    db_connect = DBConnect(cfg.get('database', 'hostname').strip("'"),
+                           cfg.get('database', 'db_name').strip("'"),
+                           cfg.get('database', 'username').strip("'"),
+                           cfg.get('database', 'password').strip("'"),
+                           cfg.get('database', 'charset').strip("'"))
 
     start = time.time()
     #通过存储过程判断是否有权限

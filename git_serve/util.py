@@ -9,6 +9,25 @@ import socket
 import fcntl
 import struct
 
+from MySQLdb import connect
+
+
+class DBConnect():
+    def __init__(self, host, db, user, password, charset):
+        self.conn = connect(host=host, db=db, user=user, passwd=password, charset=charset)
+        self.cursor = self.conn.cursor()
+
+    def db_close(self):
+        """关闭数据库连接"""
+
+        self.cursor.close()
+        self.conn.close()
+
+    def execute_query(self, sql=''):
+        """执行查询语句"""
+        self.cursor.execute(sql)
+        return self.cursor.fetchall()
+
 
 def mk_dir(*a, **kw):
     try:
@@ -63,6 +82,15 @@ def create_hook_link(hook_path='', hook_name=[], repository_root=''):
                         os.symlink(os.path.join(hook_path, hook), hook_link_path)
             elif os.path.isdir(child_path):
                 repository_list.append(child_path)
+
+
+def create_repository_hook_link(repo_path=''):
+    """"创建单个仓库的hook连接文件"""
+
+    hook_path = os.path.expanduser('~/.git-serve/hooks')
+    for hook_name in os.listdir(hook_path):
+        os.symlink(os.path.join(hook_path, hook_name), os.path.join(repo_path, 'hooks', hook_name))
+
 
 
 if __name__ == '__main__':

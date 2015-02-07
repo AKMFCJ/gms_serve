@@ -128,14 +128,7 @@ class Main(App):
             os.putenv('git_user', user)
             #提交仓库的相对路径, 从repositories/开始
             os.putenv('repo_path', repo_path)
-            #存在权限设置的数据库访问信息
-            os.putenv('db_host', cfg.get('database', 'hostname').strip("'"))
-            os.putenv('db_name', cfg.get('database', 'db_name').strip("'"))
-            os.putenv('db_username', cfg.get('database', 'username').strip("'"))
-            os.putenv('db_password', cfg.get('database', 'password').strip("'"))
-            os.putenv('db_charset', cfg.get('database', 'charset').strip("'"))
             os.putenv('access_repo_path', access_repo_path)
-            os.putenv('localhost_ip', cfg.get('localhost', 'ip'))
 
         os.execvp('git', ['git', 'shell', '-c', git_cmd])
         logging.error('Cannot execute git-shell.')
