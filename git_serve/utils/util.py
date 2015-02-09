@@ -19,7 +19,7 @@ def get_current_time(format_str='%Y-%m-%d %H:%M:%S'):
 
 
 class DBConnect():
-    def __init__(self, host, db, user, password, charset):
+    def __init__(self, host, db, user, password, charset='utf8'):
         self.conn = connect(host=host, db=db, user=user, passwd=password, charset=charset)
         self.cursor = self.conn.cursor()
 
@@ -103,6 +103,9 @@ def create_repository_hook_link(repo_path=''):
         os.symlink(os.path.join(hook_path, hook_name), os.path.join(repo_path, 'hooks', hook_name))
 
 
-
 if __name__ == '__main__':
-    print dir_name('mt6572/platform/build.git', 1)
+    db_connect = DBConnect('192.168.33.106', 'tup', 'root', 'root')
+    insert_sql = "insert into notice_repo_error_issue_key (repo_path, reference_name, committer, push_date, message) " \
+                 "values(%s, %s, %s, %s, %s)"
+    db_connect.execute_many(insert_sql, [('/home/git/repositories/qc8909/platform/build.git', 'refs/heads/master', 'changjie.fan', '2015-02-09 17:26:00', u'/home/git/repositories/qc8909/platform/build.git\nrefs/heads/master\n\\changjie.fan\\2015-02-09 17:26:00\n851b4a12389661c50ed96c912ddb8be4c89473ee\t<REQ><SCM-1><test access>\n\tSCM-1\n9c25e65d67e090a86829e1e0a13c6d7406457b31\t<REQ><SCM-1><test access>\n\tSCM-1\n1bf4febdecae05eda90afdcab48792f351a61bbd\t<REQ><SCM-1><test access>\n\tSCM-1')])
+    db_connect.db_close()
