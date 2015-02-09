@@ -51,9 +51,9 @@ def have_write_access(cfg, user, repo_path):
     logger.info(time.time()-start)
     db_connect.db_close()
     if data[0][0]:
-        return True
+        return True, ''
     else:
-        return False
+        return False, user + ":" + repo_path + +"没有仓库的提交权限"
 
 
 def have_reference_write_access(cfg, git_user, repo_path, reference_name):
@@ -73,6 +73,6 @@ def have_reference_write_access(cfg, git_user, repo_path, reference_name):
     logger.info(time.time()-start)
     db_connect.db_close()
     if data[0][0]:
-        return True
+        return True, ''
     else:
-        return False, git_user + ":" + repo_path + ":" + reference_name+"没有提交权限"
+        return False, git_user + ":" + repo_path + ":" + reference_name+"没有项目的提交权限"
