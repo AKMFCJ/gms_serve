@@ -3,6 +3,7 @@ __author__ = 'changjie.fan'
 """
 检查提交说明中的key是否真实存在
 """
+import os
 
 from git_serve.utils.util import DBConnect, get_current_time
 from git_serve.utils.send_mail import send_mail
@@ -32,12 +33,12 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
     db_connect.db_close()
 
     push_date = get_current_time()
-    message = "%s\n%s\n\%s\%s" % (repo_path, reference_name, git_user, push_date)
+    message = "%s\n%s\t%s\t%s" % (repo_path, os.path.basename(reference_name), git_user, push_date)
     has_error = False
     for issue_num, issue_key, commit in change_commits:
         if issue_num not in records:
             has_error = True
-            message = '\n'.join([message, commit.hexsha+'\t'+commit.message+'\t'+issue_key])
+            message = '\n'.join([commit.hexsha, message, commit.message])
 
     if has_error:
         insert_sql = "insert into notice_repo_error_issue_key (repo_path, reference_name, committer, push_date, " \
