@@ -82,7 +82,7 @@ class Main(object):
                         shutil.copy(src_file, dst_file)
                 else:
                     shutil.copy(src_file, dst_file)
-                os.chmod(dst_file, 0700)
+                os.chmod(dst_file, 0755)
         else:
             os.mkdir(dst_path)
             for file_name in src_file_names:
