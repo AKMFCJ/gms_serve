@@ -31,16 +31,17 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
     records = [tmp[0] for tmp in db_connect.execute_query(query_sql)]
     db_connect.db_close()
 
+    push_date = get_current_time()
     message = "%s\n%s\n\%s\%s" % (repo_path, reference_name, git_user, push_date)
     has_error = False
     for issue_num, issue_key, commit in commits:
         if issue_num not in records:
             has_error = True
-            message = '\n'.join([message, commit.commit_id+'\t'+commit.message+'\t'+issue_key])
+            message = '\n'.join([message, commit.hexsha+'\t'+commit.message+'\t'+issue_key])
 
     if has_error:
         insert_sql = "insert into notice_repo_error_issue_key values(%s, %s, %s, %s, %s)"
-        push_date = get_current_time()
+
         db_connect = DBConnect(cfg.get('database', 'hostname').strip("'"),
                                cfg.get('database', 'db_name').strip("'"),
                                cfg.get('database', 'username').strip("'"),

@@ -35,7 +35,7 @@ def check_commit_msg(repo_path, old_rev, new_rev):
         if m:
             commit_list.append((commit, m.groups()[1]))
         else:
-            error_commit_list.append('%s:%s' % (commit.commit_id, commit.message))
+            error_commit_list.append('%s:%s' % (commit.hexsha, commit.message))
 
     return error_commit_list, commit_list
 
@@ -75,6 +75,7 @@ def main(argv):
     git_user = os.getenv('git_user')
     #当前提交仓库的相对路径, 由ssh处理脚本通过环境变量传递过来
     repo_path = os.getenv('access_repo_path')
+    full_repo_path = os.path.join('/home/git/repositories', repo_path+'.git')
 
     reference_name = argv[1]
     old_rev = argv[2]
@@ -85,14 +86,14 @@ def main(argv):
     print sys.argv
 
     #检查提交说明是否符合规范
-    (error_commit_list, commit_list) = check_commit_msg(repo_path, old_rev, new_rev)
+    (error_commit_list, commit_list) = check_commit_msg(full_repo_path, old_rev, new_rev)
     if error_commit_list:
         print Fore.RED+Style.BRIGHT + "以下Commit的说明不符合规范:\n"
         print '\n'.join(error_commit_list)
         sys.exit(1)
 
     #检查提交说明中的ISSUE_KEY是否真实有效
-    (result, message) = check_issue_key(cfg, git_user, reference_name, repo_path, commit_list)
+    (result, message) = check_issue_key(cfg, git_user, reference_name, full_repo_path, commit_list)
     #ISSUE KEY正确
     if result:
         sys.exit(0)
