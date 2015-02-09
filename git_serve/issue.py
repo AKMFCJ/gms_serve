@@ -47,7 +47,7 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
                                cfg.get('database', 'username').strip("'"),
                                cfg.get('database', 'password').strip("'"),
                                cfg.get('database', 'charset').strip("'"))
-        db_connect.execute_many(insert_sql, [repo_path, reference_name, git_user, push_date, message])
+        db_connect.execute_many(insert_sql, [(repo_path, reference_name, git_user, push_date, message)])
 
         #发送提醒邮件
         query_sql = "select email from notice_reference_commit_email where reference_name='%s'" % reference_name

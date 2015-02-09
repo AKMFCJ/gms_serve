@@ -36,7 +36,7 @@ class DBConnect():
 
     def execute_many(self, insert_sql, values=[]):
         """执行批量插入语句"""
-        self.cursor.exeutemany(insert_sql, values)
+        self.cursor.executemany(insert_sql, values)
         self.conn.commit()
 
 
