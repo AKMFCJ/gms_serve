@@ -84,9 +84,10 @@ class Main(object):
                     shutil.copy(src_file, dst_file)
                 os.chmod(dst_file, 0755)
         else:
-            os.mkdir(dst_path)
+            util.mk_dir(dst_path, 0755)
             for file_name in src_file_names:
                 shutil.copy(os.path.join(src_path, file_name), dst_path)
+                os.chmod(os.path.join(dst_path, file_name), 0755)
         create_hook_link(dst_path, src_file_names, repositories)
 
     @staticmethod

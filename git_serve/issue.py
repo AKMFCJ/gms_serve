@@ -34,7 +34,7 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
     push_date = get_current_time()
     message = "%s\n%s\n\%s\%s" % (repo_path, reference_name, git_user, push_date)
     has_error = False
-    for issue_num, issue_key, commit in commits:
+    for issue_num, issue_key, commit in change_commits:
         if issue_num not in records:
             has_error = True
             message = '\n'.join([message, commit.hexsha+'\t'+commit.message+'\t'+issue_key])

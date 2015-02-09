@@ -89,7 +89,11 @@ def main(argv):
     (error_commit_list, commit_list) = check_commit_msg(full_repo_path, old_rev, new_rev)
     if error_commit_list:
         print Fore.RED+Style.BRIGHT + "以下Commit的说明不符合规范:\n"
+        Fore.BLACK
         print '\n'.join(error_commit_list)
+        print '\n'
+        print Fore.YELLOW + '标准规范是:'+Fore.GREEN+' <REQ|BUG|FUNC|PATCH|DEBUG><JIRA_KEY><项目tag:说明>'
+        Fore.BLACK
         sys.exit(1)
 
     #检查提交说明中的ISSUE_KEY是否真实有效
