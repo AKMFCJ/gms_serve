@@ -28,7 +28,7 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
 
     #判断issue key在数据库中是否存在
     query_sql = "select issue.issuenum from jiraissue issue join project pro where issue.issuenum in (%s) and " \
-                "issue.project=pro.id and  pro.pkey='%s'" % (''.join(issue_num_list), project_key)
+                "issue.project=pro.id and  pro.pkey='%s'" % (','.join(issue_num_list), project_key)
     records = [tmp[0] for tmp in db_connect.execute_query(query_sql)]
     db_connect.db_close()
 
@@ -61,10 +61,10 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
         if mail_list:
             send_mail(cfg, "%s: JIRA_KEY_ERROR" % reference_name, message, mail_list.split(';'))
         else:
-            send_mail(cfg, "%s: JIRA_KEY_ERROR" % reference_name, message, cfg.get('admin', 'admin_mail'))
+            send_mail(cfg, "%s: JIRA_KEY_ERROR" % reference_name, message.replace('\n', '<br>'), cfg.get('admin', 'admin_mail'))
         return False, message
     else:
-        return True
+        return True, ''
 
 
 
