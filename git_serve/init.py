@@ -1,4 +1,6 @@
 #-*- encoding:utf-8 -*-
+from git_serve.utils import util
+
 __author__ = 'changjie.fan'
 """
 ssh authorized_keys的初始化
@@ -7,11 +9,10 @@ ssh authorized_keys的初始化
 """
 import os
 import logging
-import util
 import ConfigParser
 import shutil
 
-from util import create_hook_link
+from git_serve.utils.util import create_hook_link
 
 logger = logging.getLogger('git-serve')
 

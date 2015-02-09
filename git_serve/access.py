@@ -5,7 +5,7 @@ __author__ = 'changjie.fan'
 """
 import logging
 import time
-from util import DBConnect
+from git_serve.utils.util import DBConnect
 
 logger = logging.getLogger('git-serve')
 
@@ -56,7 +56,7 @@ def have_write_access(cfg, user, repo_path):
         return False
 
 
-def have_reference_write_access(cfg, user, repo_path, reference_name, localhost_ip):
+def have_reference_write_access(cfg, git_user, repo_path, reference_name):
     """判断是否有仓库具体引用的写权限"""
 
     db_connect = DBConnect(cfg.get('database', 'hostname').strip("'"),
@@ -67,11 +67,12 @@ def have_reference_write_access(cfg, user, repo_path, reference_name, localhost_
 
     start = time.time()
     #通过存储过程判断是否有权限
-    db_connect.cursor.callproc('repository_write_reference_access', (user, reference_name, repo_path, localhost_ip))
+    db_connect.cursor.callproc('repository_write_reference_access', (git_user, reference_name, repo_path,
+                                                                     cfg.get('localhost', 'ip')))
     data = db_connect.cursor.fetchall()
     logger.info(time.time()-start)
     db_connect.db_close()
     if data[0][0]:
         return True
     else:
-        return False
+        return False, git_user + ":" + repo_path + ":" + reference_name+"没有提交权限"
