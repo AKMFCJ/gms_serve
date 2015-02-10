@@ -25,7 +25,7 @@ def have_read_access(cfg, user, repo_path):
                            cfg.get('database', 'charset').strip("'"))
     start = time.time()
     #通过存储过程判断是否有权限
-    db_connect.cursor.callproc('repository_read_access', (user, repo_path, cfg.get('localhost', 'ip')))
+    db_connect.cursor.callproc('repository_read_access', (user, repo_path, cfg.get('localhost', 'ip'), '@my_user_id'))
     data = db_connect.cursor.fetchall()
     logger.info(time.time()-start)
     db_connect.db_close()
@@ -46,7 +46,7 @@ def have_write_access(cfg, user, repo_path):
 
     start = time.time()
     #通过存储过程判断是否有权限
-    db_connect.cursor.callproc('repository_write_access', (user, repo_path, cfg.get('localhost', 'ip')))
+    db_connect.cursor.callproc('repository_write_access', (user, repo_path, cfg.get('localhost', 'ip'), '@my_user_id'))
     data = db_connect.cursor.fetchall()
     logger.info(time.time()-start)
     db_connect.db_close()
@@ -68,7 +68,7 @@ def have_reference_write_access(cfg, git_user, repo_path, reference_name):
     start = time.time()
     #通过存储过程判断是否有权限
     db_connect.cursor.callproc('repository_write_reference_access', (git_user, reference_name, repo_path,
-                                                                     cfg.get('localhost', 'ip')))
+                                                                     cfg.get('localhost', 'ip'), '@my_user_id'))
     data = db_connect.cursor.fetchall()
     logger.info(time.time()-start)
     db_connect.db_close()
