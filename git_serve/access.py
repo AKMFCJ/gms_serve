@@ -53,7 +53,7 @@ def have_write_access(cfg, user, repo_path):
     if data[0][0]:
         return True, ''
     else:
-        return False, user + ":" + repo_path + +"没有仓库的提交权限"
+        return False, user + ":" + repo_path + "没有仓库的提交权限"
 
 
 def have_reference_write_access(cfg, git_user, repo_path, reference_name):

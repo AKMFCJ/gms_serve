@@ -99,19 +99,18 @@ def main(argv):
     #检查提交说明中的ISSUE_KEY是否真实有效
     (result, message) = check_issue_key(cfg, git_user, reference_name, full_repo_path, commit_list)
     #ISSUE KEY正确
-    if result:
-        sys.exit(0)
-    else:
+    if not result:
         print Fore.RED+Style.BRIGHT + message
         sys.exit(1)
 
     #检查提交权限
     (result, message) = have_reference_write_access(cfg, git_user, reference_name, repo_path)
-    if result:
-        sys.exit(0)
-    else:
+    if not result:
         print Fore.RED+Style.BRIGHT + message
         sys.exit(1)
+
+    #正常退出
+    sys.exit(0)
 
 if __name__ == '__main__':
     main(sys.argv)
