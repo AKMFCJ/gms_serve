@@ -29,7 +29,7 @@ def have_read_access(cfg, user, repo_path):
     data = db_connect.cursor.fetchall()
     logger.info(time.time()-start)
     db_connect.db_close()
-    if data[0][0]:
+    if len(data) > 0 and len(data[0]) > 0 and data[0][0]:
         return True
     else:
         return False
