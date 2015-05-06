@@ -40,11 +40,11 @@ class AccessDenied(ServingError):
 
 
 class WriteAccessDenied(AccessDenied):
-    """没有仓库的写权限"""
+    """no repository PUSH permission"""
 
 
 class ReadAccessDenied(AccessDenied):
-    """没有仓库的读权限"""
+    """no repository CLONE permission"""
 
 
 def serve(cfg, user, command, ):
