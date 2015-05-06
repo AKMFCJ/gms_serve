@@ -59,9 +59,9 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
             mail_list = mail_list[0]
         db_connect.db_close()
         if mail_list:
-            send_mail(cfg, "%s: JIRA_KEY_ERROR" % os.path.basename(reference_name), message, mail_list.split(';'))
+            send_mail(cfg, "%s:\033[43;31;1mJIRA_KEY_ERROR\033[0m" % os.path.basename(reference_name), message, mail_list.split(';'))
         else:
-            send_mail(cfg, "%s: JIRA_KEY_ERROR" % os.path.basename(reference_name),
+            send_mail(cfg, "%s:\033[43;31;1mJIRA_KEY_ERROR\033[0m" % os.path.basename(reference_name),
                       message.replace('\n', '<br>'), cfg.get('admin', 'admin_mail'))
         return False, message
     else:

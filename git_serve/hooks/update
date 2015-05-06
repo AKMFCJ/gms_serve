@@ -10,15 +10,10 @@ import os
 import ConfigParser
 import re
 
-from colorama import *
-
 from git_serve.access import have_reference_write_access
 from git_serve.issue import check_issue_key
 from git_serve.git_cmd import GitCmd
 
-init(autoreset=True)
-COLOR = [Fore.RED, Fore.GREEN, Fore.BLUE, Fore.BLACK, Fore.YELLOW,
-         Fore.MAGENTA, Fore.CYAN, Fore.WHITE, Fore.RESET]
 pattern = r'^<(REQ|BUG|FUNC|DEBUG|PATCH|BASELINE)><([A-Z]{3,}\-\d+)><(.+)>$'
 
 
@@ -81,32 +76,27 @@ def main(argv):
     old_rev = argv[2]
     new_rev = argv[3]
 
-    print git_user
-    print repo_path
-    print sys.argv
-
     #检查提交说明是否符合规范
     (error_commit_list, commit_list) = check_commit_msg(full_repo_path, old_rev, new_rev)
     if error_commit_list:
-        print Fore.RED+Style.BRIGHT + "以下Commit的说明不符合规范:\n"
-        Fore.BLACK
+        print "\033[43;31;1m以下Commit的说明不符合规范:\033[0m\n"
+
         print '\n'.join(error_commit_list)
         print '\n'
-        print Fore.YELLOW + '标准规范是:'+Fore.GREEN+' <REQ|BUG|FUNC|PATCH|DEBUG><JIRA_KEY><项目tag:说明>'
-        Fore.BLACK
+        print '\033[34m标准规范是:<REQ|BUG|FUNC|PATCH|DEBUG><JIRA_KEY><项目tag:说明>\033[0m'
         sys.exit(1)
 
     #检查提交说明中的ISSUE_KEY是否真实有效
     (result, message) = check_issue_key(cfg, git_user, reference_name, full_repo_path, commit_list)
     #ISSUE KEY正确
     if not result:
-        print Fore.RED+Style.BRIGHT + message
+        print message
         sys.exit(1)
 
     #检查提交权限
     (result, message) = have_reference_write_access(cfg, git_user, reference_name, repo_path)
     if not result:
-        print Fore.RED+Style.BRIGHT + message
+        print message
         sys.exit(1)
 
     #正常退出

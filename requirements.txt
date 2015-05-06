@@ -1,3 +1,2 @@
 MySQLdb >= 1.2.3 #MySQL数据库连接
 GitPython >= 0.3.1 #python 实现的git api
-colorama >= 0.3.3 #文本高亮

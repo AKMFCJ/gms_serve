@@ -8,7 +8,7 @@ import os
 import sys
 
 from git_serve.app import App
-from git_serve.access import have_read_access, have_write_access
+from git_serve.access import have_read_access
 
 logger = logging.getLogger('git-serve')
 
@@ -83,17 +83,12 @@ def serve(cfg, user, command, ):
             raise ReadAccessDenied()
     elif verb in COMMANDS_WRITE:
         is_write = True
-        if not have_write_access(cfg, user, access_repo_path):
+        if not have_read_access(cfg, user, access_repo_path):
             raise WriteAccessDenied()
-
-    logger.warning('user:%s' % user)
-    logger.warning('verb:%s' % verb)
-    logger.warning('args:%s' % args)
 
     #仓库绝对路径的拼装
     full_path = os.path.join('repositories', repo_path)
-    new_cmd = "%(verb)s '%(path)s'" % dict(verb=verb, path=full_path,)
-    logger.warning('new_cmd:%s' % new_cmd)
+    new_cmd = "%(verb)s '%(path)s'" % dict(verb=verb, path=full_path, )
 
     return user, new_cmd, full_path, access_repo_path, is_write
 
@@ -117,7 +112,7 @@ class Main(App):
             sys.exit(1)
 
         try:
-            user, git_cmd, repo_path, access_repo_path, is_write = serve(cfg=cfg, user=user, command=ssh_cmd,)
+            user, git_cmd, repo_path, access_repo_path, is_write = serve(cfg=cfg, user=user, command=ssh_cmd, )
         except ServingError, e:
             logger.error(u'\033[43;31;1m %s:%s\033[0m' % (user, e))
             sys.exit(1)
