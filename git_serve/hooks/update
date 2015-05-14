@@ -90,7 +90,8 @@ def main(argv):
     (result, message) = check_issue_key(cfg, git_user, reference_name, full_repo_path, commit_list)
     #ISSUE KEY正确
     if not result:
-        print message
+        print "\033[43;31;1mJIRA_KEY在jira数据库中不存在\033[0m\n"
+        print "\033[34m%s\033[0m" % message
         sys.exit(1)
 
     #检查提交权限
