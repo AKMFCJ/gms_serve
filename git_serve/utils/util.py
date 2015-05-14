@@ -89,11 +89,11 @@ def create_hook_link(hook_path='', hook_name=[], repository_root=''):
             if child_path.endswith('.git'):
                 child_hook_path = os.path.join(child_path, 'hooks')
                 old_hooks = os.listdir(child_hook_path)
-                for hook_name in old_hooks:
-                    hook_path = os.path.join(child_hook_path, hook_name)
-                    if os.path.islink(hook_path):
+                for old_hook_name in old_hooks:
+                    old_hook_path = os.path.join(child_hook_path, old_hook_name)
+                    if os.path.islink(old_hook_path):
                         try:
-                            os.remove(hook_path)
+                            os.remove(old_hook_path)
                         except IOError:
                             pass
                 for hook in hook_name:
