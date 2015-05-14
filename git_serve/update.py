@@ -88,7 +88,6 @@ class Main(object):
             for file_name in src_file_names:
                 shutil.copy(os.path.join(src_path, file_name), dst_path)
                 os.chmod(os.path.join(dst_path, file_name), 0755)
-        create_hook_link(dst_path, src_file_names, repositories)
 
     @staticmethod
     def create_git_serve_conf(git_serve_dir):
