@@ -97,7 +97,6 @@ def create_hook_link(hook_path='', hook_name=[], repository_root=''):
                         except IOError:
                             pass
                 for hook in hook_name:
-                    if hook.endswith('.py')
                     hook_link_path = os.path.join(child_path, 'hooks', hook)
                     if not os.path.exists(hook_link_path):
                         os.symlink(os.path.join(hook_path, hook), hook_link_path)
