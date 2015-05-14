@@ -55,6 +55,11 @@ def have_read_access(cfg, user, repo_path):
         return False
 
     permission = json_loads(permission_data[0])
+
+    #check group All in permission["read']
+    if '1' in permission["read"]:
+        return True
+
     for group in group_query_data:
         if str(group[0]) in permission["read"]:
             logger.info(time.time()-start)
@@ -102,6 +107,10 @@ def have_reference_write_access(cfg, user, reference_name, repo_path):
         return False
 
     permission = json_loads(permission_data[0])
+    #check group All in permission["read']
+    if '1' in permission["write"]:
+        return True, ''
+
     #仓库级的权限
     for group in group_query_data:
         if str(group[0]) in permission["write"]:

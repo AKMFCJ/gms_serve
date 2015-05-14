@@ -52,17 +52,17 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
         db_connect.execute_many(insert_sql, [(repo_path, reference_name, git_user, push_date, message)])
 
         #发送提醒邮件
-        query_sql = "select email from notice_reference_commit_email where reference_name='%s' " \
-                    "and notice_type='ERROR_ISSUE_KEY'" % reference_name
-        mail_list = [tmp[0] for tmp in db_connect.execute_query(query_sql)]
-        if mail_list:
-            mail_list = mail_list[0]
-        db_connect.db_close()
-        if mail_list:
-            send_mail(cfg, "%s:\033[43;31;1mJIRA_KEY_ERROR\033[0m" % os.path.basename(reference_name), message, mail_list.split(';'))
-        else:
-            send_mail(cfg, "%s:\033[43;31;1mJIRA_KEY_ERROR\033[0m" % os.path.basename(reference_name),
-                      message.replace('\n', '<br>'), cfg.get('admin', 'admin_mail'))
+        #query_sql = "select email from notice_reference_commit_email where reference_name='%s' " \
+        #            "and notice_type='ERROR_ISSUE_KEY'" % reference_name
+        #mail_list = [tmp[0] for tmp in db_connect.execute_query(query_sql)]
+        #if mail_list:
+        #    mail_list = mail_list[0]
+        #db_connect.db_close()
+        #if mail_list:
+        #    send_mail(cfg, "%s:\033[43;31;1mJIRA_KEY_ERROR\033[0m" % os.path.basename(reference_name), message, mail_list.split(';'))
+        #else:
+        #    send_mail(cfg, "%s:\033[43;31;1mJIRA_KEY_ERROR\033[0m" % os.path.basename(reference_name),
+        #              message.replace('\n', '<br>'), cfg.get('admin', 'admin_mail'))
         return False, message
     else:
         return True, ''
