@@ -87,6 +87,15 @@ def create_hook_link(hook_path='', hook_name=[], repository_root=''):
         for child in folder_child:
             child_path = os.path.join(folder_path, child)
             if child_path.endswith('.git'):
+                child_hook_path = os.path.join(child_path, 'hooks')
+                old_hooks = os.listdir(child_hook_path)
+                for hook_name in old_hooks:
+                    hook_path = os.path.join(child_hook_path, hook_name)
+                    if os.path.islink(hook_path):
+                        try:
+                            os.remove(hook_path)
+                        except IOError:
+                            pass
                 for hook in hook_name:
                     hook_link_path = os.path.join(child_path, 'hooks', hook)
                     if not os.path.exists(hook_link_path):
