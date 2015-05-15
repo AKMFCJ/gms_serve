@@ -19,7 +19,7 @@ from email.header import Header
 import time
 import commands
 import MySQLdb
-import ConfigParser
+from ConfigParser import ConfigParser
 
 
 def send_mail(config_parser, to_list=[], sub='', content='', appendix_file=''):
@@ -31,10 +31,10 @@ def send_mail(config_parser, to_list=[], sub='', content='', appendix_file=''):
     """
 
     #设置服务器、用户名、口令及邮箱的后缀
-    mail_host = config_parser.get("email", "host")
-    mail_user = config_parser.get("email", "username")
-    mail_pass = config_parser.get("email", "password")
-    sender = config_parser.get("email", "sender")
+    mail_host = config_parser.get("email", "host").strip("'")
+    mail_user = config_parser.get("email", "username").strip("'")
+    mail_pass = config_parser.get("email", "password").strip("'")
+    sender = config_parser.get("email", "sender").strip("'")
 
     msg_root = MIMEMultipart()
      #解决中文乱码
