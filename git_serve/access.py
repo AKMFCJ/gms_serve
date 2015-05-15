@@ -1,4 +1,4 @@
-#-*- encoding:utf-8 -*-
+#-*- coding:utf-8 -*-
 __author__ = 'changjie.fan'
 """
 从数据库中读取当前用户操作的仓库是否有对应的权限
@@ -64,7 +64,7 @@ def have_read_access(cfg, user, repo_path):
         if str(group[0]) in permission["read"]:
             logger.info(time.time()-start)
             return True
-
+    logger.info("%s clone : %s" % (user, repo_path))
     logger.info("check read:%s" % str(time.time()-start))
     return False
 
@@ -121,11 +121,14 @@ def have_reference_write_access(cfg, user, reference_name, repo_path):
     for group in group_query_data:
         for reference in permission["reference"]:
             if reference['name'] == reference_name:
-                if str(group[0]) in reference['write']:
+                if "1" in reference['write']:
+                    return True, ''
+                elif str(group[0]) in reference['write']:
                     return True, ''
 
     print("check write:%s" % str(time.time()-start))
+    logger.info("%s:push:%s:%s" % (user, repo_path, reference_name))
     logger.info("check write:%s" % str(time.time()-start))
 
     return False, user + "\n\033[43;31;1m no permission \033[0m"+ "\npush \n\033[43;31;1m "+ reference_name \
-                  +"\033[0m\n ot "+ repo_path
+                  +"\033[0m\n to "+ repo_path

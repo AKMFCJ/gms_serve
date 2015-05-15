@@ -1,4 +1,4 @@
-#-*- encoding:utf-8 -*-
+#-*- coding:utf-8 -*-
 from git_serve.utils import util
 
 __author__ = 'changjie.fan'

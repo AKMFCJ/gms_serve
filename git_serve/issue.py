@@ -1,4 +1,4 @@
-#-*- encoding:utf-8 -*-
+#-*- coding:utf-8 -*-
 __author__ = 'changjie.fan'
 """
 检查提交说明中的key是否真实存在

@@ -1,4 +1,4 @@
-#-*- encoding:utf-8 -*-
+#-*- coding:utf-8 -*-
 __author__ = 'changjie.fan'
 """
 创建裸库和连接hooks文件

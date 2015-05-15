@@ -1,4 +1,4 @@
-#-*- encoding:utf-8 -*-
+#-*- coding:utf-8 -*-
 __author__ = 'changjie.fan'
 """
 git-serve的入口程序控制，仓库级的读写权限
