@@ -24,7 +24,7 @@ class Main(object):
             for git_path in sys.argv[1:]:
                 if git_path.endswith('/'):
                     git_path = git_path[:-1]
-                git_hook_path = os.path.join(repo_path, 'hooks')
+                git_hook_path = os.path.join(git_path, 'hooks')
                 if os.path.exists(git_path) and git_path.endswith('.git') and os.path.isdir(git_path) and \
                         os.path.exists(git_hook_path):
                     dst_path_list.append(git_hook_path)
