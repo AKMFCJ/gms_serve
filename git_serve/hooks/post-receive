@@ -235,7 +235,7 @@ if __name__ == "__main__":
         (short_info, commit_info) = get_commit_info(git_path, new_rev, tag_name)
         git_path = git_path.split('/home/git/repositories')[1]
         commit_info = '\n'.join([git_path, commit_info])
-        title = os.path.basename(git_path) + tag_name+"___项目更新通知邮件"
+        title = os.path.basename(git_path) + '___' + tag_name+"___项目更新通知邮件"
         if short_info:
             title = tag_name+" ___项目更新通知邮件(简略信息)"
 
