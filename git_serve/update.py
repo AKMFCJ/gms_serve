@@ -20,7 +20,7 @@ class Main(object):
 
         #创建和更新指定仓库的hooks
         if len(sys.argv) > 1:
-            src_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'git_serve/hooks')
+            src_path = os.path.expanduser('~/.git-serve/hooks')
             src_file_names = os.listdir(src_path)
             for git_path in sys.argv[1:]:
                 git_hook_path = os.path.join(git_path, 'hooks')
@@ -30,9 +30,10 @@ class Main(object):
                         dst_file = os.path.join(git_hook_path, src_file_name)
                         if os.path.exists(dst_file):
                             if not os.path.samefile(src_file, dst_file):
-                                shutil.copy(src_file, dst_file)
+                                os.remove(dst_file)
+                                os.symlink(src_file, dst_file)
                         else:
-                            shutil.copy(src_file, dst_file)
+                            os.symlink(src_file, dst_file)
                         os.chmod(dst_file, 0755)
                 else:
                     print "%s is not git bare repository" % git_path
