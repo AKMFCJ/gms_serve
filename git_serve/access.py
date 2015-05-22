@@ -46,13 +46,19 @@ def have_read_access(cfg, user, repo_path):
 
     permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
                      "repository_repository WHERE path='%s' AND " \
-                     "repository_server_id=%s);" % (repo_path, repository_server_id)
+                     "repository_server_id=%s)" % (repo_path, repository_server_id)
 
     cursor.execute(permission_sql)
     permission_data = cursor.fetchone()
 
     if not permission_data or len(permission_data) == 0:
-        return False
+        permission_sql = "SELECT * FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
+                         "repository_platform WHERE id IN(SELECT platform_id FROM repository_repository WHERE " \
+                         "path='%s' AND repository_server_id=%s));" % (repo_path, repository_server_id)
+        cursor.execute(permission_sql)
+        permission_data = cursor.fetchone()
+        if not permission_data or len(permission_data) == 0:
+            return False
 
     permission = json_loads(permission_data[0])
 
@@ -104,7 +110,13 @@ def have_reference_write_access(cfg, user, reference_name, repo_path):
     permission_data = cursor.fetchone()
 
     if not permission_data or len(permission_data) == 0:
-        return False
+        permission_sql = "SELECT * FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
+                         "repository_platform WHERE id IN(SELECT platform_id FROM repository_repository WHERE " \
+                         "path='%s' AND repository_server_id=%s));" % (repo_path, repository_server_id)
+        cursor.execute(permission_sql)
+        permission_data = cursor.fetchone()
+        if not permission_data or len(permission_data) == 0:
+            return False
 
     permission = json_loads(permission_data[0])
     #check group All in permission["read']
