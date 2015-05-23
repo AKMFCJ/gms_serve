@@ -69,7 +69,7 @@ def have_read_access(cfg, user, repo_path):
             for repo_dir in repo_dirs:
                 platform_path = os.path.join(platform_path, repo_dir)
                 permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id " \
-                                 "FROM repository_platform WHERE path='%s' AND repository_server_id=%s" % \
+                                 "FROM repository_platform WHERE path='%s' AND repository_server_id=%s)" % \
                                  (platform_path+"/", repository_server_id)
                 cursor.execute(permission_sql)
                 permission_data = cursor.fetchone()
@@ -146,7 +146,7 @@ def have_reference_write_access(cfg, user, reference_name, repo_path):
             for repo_dir in repo_dirs:
                 platform_path = os.path.join(platform_path, repo_dir)
                 permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
-                                 "repository_platform WHERE path='%s' AND repository_server_id=%s" % \
+                                 "repository_platform WHERE path='%s' AND repository_server_id=%s)" % \
                                  (platform_path+"/", repository_server_id)
                 cursor.execute(permission_sql)
                 permission_data = cursor.fetchone()
