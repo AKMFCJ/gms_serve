@@ -27,6 +27,7 @@ def have_read_access(cfg, user, repo_path):
                            cfg.get('database', 'password').strip("'"),
                            cfg.get('database', 'charset').strip("'"))
     start = time.time()
+    #用户所在组
     group_sql = "SELECT group_server.gitusergroup_id,repo_server.id, repo_server.backup_dir_path FROM " \
                 "repository_user_group_repository_server AS group_server JOIN repository_server AS repo_server " \
                 "ON group_server.repositoryserver_id=repo_server.id AND repo_server.ip='%s' AND " \
@@ -44,6 +45,7 @@ def have_read_access(cfg, user, repo_path):
     repository_server_id = group_query_data[0][1]
     repo_path = os.path.join(backup_dir_path, repo_path+".git")
 
+    #检查仓库的权限
     permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
                      "repository_repository WHERE path='%s' AND " \
                      "repository_server_id=%s)" % (repo_path, repository_server_id)
@@ -51,12 +53,29 @@ def have_read_access(cfg, user, repo_path):
     cursor.execute(permission_sql)
     permission_data = cursor.fetchone()
 
+    #检查仓库所属平台的权限
     if not permission_data or len(permission_data) == 0:
         permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
                          "repository_platform WHERE id IN(SELECT platform_id FROM repository_repository WHERE " \
-                         "path='%s' AND repository_server_id=%s));" % (repo_path, repository_server_id)
+                         "path='%s' AND repository_server_id=%s))" % (repo_path, repository_server_id)
         cursor.execute(permission_sql)
         permission_data = cursor.fetchone()
+        if not permission_data or len(permission_data) == 0:
+            return False
+
+    #检查仓库没有导入TSDS数据库中的平台权限
+    if not permission_data or len(permission_data) == 0:
+        repo_dirs = [tmp for tmp.strip() in repo_path.split(backup_dir_path)[1].split('/') if tmp]
+        platform_path = backup_dir_path
+        for repo_dir in repo_dirs:
+            platform_path = os.path.join(platform_path, repo_dir)
+            permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
+                             "repository_platform WHERE path='%s' AND repository_server_id=%s" % \
+                             (platform_path+"/", repository_server_id)
+            cursor.execute(permission_sql)
+            permission_data = cursor.fetchone()
+            if permission_data and len(permission_data) != 0:
+                break
         if not permission_data or len(permission_data) == 0:
             return False
 
@@ -70,7 +89,8 @@ def have_read_access(cfg, user, repo_path):
         if str(group[0]) in permission["read"]:
             logger.info(time.time()-start)
             return True
-    logger.info("%s clone : %s" % (user, repo_path))
+    now_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    logger.info("%s:%s:clone:%s" % (now_time, user, repo_path))
     logger.info("check read:%s" % str(time.time()-start))
     return False
 
@@ -85,6 +105,7 @@ def have_reference_write_access(cfg, user, reference_name, repo_path):
                            cfg.get('database', 'charset').strip("'"))
 
     start = time.time()
+    #用户所在组
     group_sql = "SELECT group_server.gitusergroup_id,repo_server.id, repo_server.backup_dir_path FROM " \
                 "repository_user_group_repository_server AS group_server JOIN repository_server AS repo_server " \
                 "ON group_server.repositoryserver_id=repo_server.id AND repo_server.ip='%s' AND " \
@@ -102,6 +123,7 @@ def have_reference_write_access(cfg, user, reference_name, repo_path):
     repository_server_id = group_query_data[0][1]
     repo_path = os.path.join(backup_dir_path, repo_path+".git")
 
+    #检查仓库权限
     permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
                      "repository_repository WHERE path='%s' AND " \
                      "repository_server_id=%s);" % (repo_path, repository_server_id)
@@ -109,12 +131,29 @@ def have_reference_write_access(cfg, user, reference_name, repo_path):
     cursor.execute(permission_sql)
     permission_data = cursor.fetchone()
 
+    #检查仓库所属平台的权限
     if not permission_data or len(permission_data) == 0:
         permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
                          "repository_platform WHERE id IN(SELECT platform_id FROM repository_repository WHERE " \
                          "path='%s' AND repository_server_id=%s));" % (repo_path, repository_server_id)
         cursor.execute(permission_sql)
         permission_data = cursor.fetchone()
+        if not permission_data or len(permission_data) == 0:
+            return False
+
+    #检查仓库没有导入TSDS数据库中的平台权限
+    if not permission_data or len(permission_data) == 0:
+        repo_dirs = [tmp for tmp.strip() in repo_path.split(backup_dir_path)[1].split('/') if tmp]
+        platform_path = backup_dir_path
+        for repo_dir in repo_dirs:
+            platform_path = os.path.join(platform_path, repo_dir)
+            permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
+                             "repository_platform WHERE path='%s' AND repository_server_id=%s" % \
+                             (platform_path+"/", repository_server_id)
+            cursor.execute(permission_sql)
+            permission_data = cursor.fetchone()
+            if permission_data and len(permission_data) != 0:
+                break
         if not permission_data or len(permission_data) == 0:
             return False
 
@@ -139,7 +178,8 @@ def have_reference_write_access(cfg, user, reference_name, repo_path):
                     return True, ''
 
     print("check write:%s" % str(time.time()-start))
-    logger.info("%s:push:%s:%s" % (user, repo_path, reference_name))
+    now_time = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime())
+    logger.info("%s:%s:push:%s:%s" % (now_time, user, repo_path, reference_name))
     logger.info("check write:%s" % str(time.time()-start))
 
     return False, user + "\n\033[43;31;1m no permission \033[0m"+ "\npush \n\033[43;31;1m "+ reference_name \

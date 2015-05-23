@@ -110,8 +110,8 @@ def get_commit_notice_email_list(repo_server_ip='', git_path='', tag_name='', ho
         cursor = conn.cursor()
         #具体仓库的配置
         repository_query_sql = 'SELECT email_address FROM repository_commit_notice WHERE reference_name="%s" ' \
-                               'AND repository_server_ip="%s" AND repository_path="%s"' % (tag_name, repo_server_ip,
-                                                                                           git_path)
+                               'AND repository_server_ip="%s" AND repository_path="%s" ANT active=1 ' % \
+                               (tag_name, repo_server_ip, git_path)
         cursor.execute(repository_query_sql)
         email_address_list = cursor.fetchone()
         if email_address_list:
@@ -121,8 +121,8 @@ def get_commit_notice_email_list(repo_server_ip='', git_path='', tag_name='', ho
             platform_name = git_path.split('/home/git/repositories/')[1]
             platform_name = platform_name[:platform_name.find('/')]
             platform_query_sql = 'SELECT email_address FROM repository_commit_notice WHERE reference_name="%s" ' \
-                                 'AND repository_server_ip="%s" AND platform_name="%s"' % (tag_name, repo_server_ip,
-                                                                                           platform_name)
+                                 'AND repository_server_ip="%s" AND platform_name="%s" ANT active=1 ' % \
+                                 (tag_name, repo_server_ip, platform_name)
             cursor.execute(platform_query_sql)
             email_address_list = cursor.fetchone()
             if email_address_list:
@@ -130,7 +130,7 @@ def get_commit_notice_email_list(repo_server_ip='', git_path='', tag_name='', ho
             else:
                 #原来直接用引用配置的实现
                 old_query_sql = 'SELECT email_address FROM repository_commit_notice WHERE ' \
-                                'reference_name="%s"' % tag_name
+                                'reference_name="%s"  ANT active=1 ' % tag_name
                 cursor.execute(old_query_sql)
                 email_address_list = cursor.fetchone()
                 if email_address_list:
@@ -223,8 +223,8 @@ if __name__ == "__main__":
         localhost = 'localhost'
         hostname = '172.16.20.162'
         db_name = 'tup'
-        username = 'root'
-        password = 'root'
+        username = 'tup'
+        password = 'tup'
         pass
 
     repository_push_log(git_path, tag_name, old_rev, new_rev, localhost, hostname, db_name, username, password)
