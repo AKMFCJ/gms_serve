@@ -99,8 +99,7 @@ def get_commit_info(git_path='', new_rev='', tag_name=''):
     return short_info, '<br/>'.join(result)
 
 
-def get_commit_notice_email_list(repo_server_ip='', git_path='', tag_name='', host_ip='',
-                                 db_name='', user_name='', password=''):
+def get_commit_notice_email_list(repo_server_ip='', git_path='', tag_name='', host_ip='', db_name='', user_name='', password=''):
     """
         获取项目的设置信息
     """
@@ -168,8 +167,7 @@ def add_push_history(repo_path='', reference='', old_rev='', new_rev='', local_i
                   (local_ip, repo_path, reference, now))
 
 
-def repository_push_log(repo_path='', reference='', old_rev='', new_rev='', local_ip='', host_ip='', db_name='',
-                     user_name='', password=''):
+def repository_push_log(repo_path='', reference='', old_rev='', new_rev='', local_ip='', host_ip='', db_name='', user_name='', password=''):
     """推送日志记入数据库中便于tsds解析
     """
 
@@ -228,8 +226,7 @@ if __name__ == "__main__":
         pass
 
     repository_push_log(git_path, tag_name, old_rev, new_rev, localhost, hostname, db_name, username, password)
-    notice_email_list = get_commit_notice_email_list(localhost, git_path, tag_name,
-                                                     hostname, db_name, username, password)
+    notice_email_list = get_commit_notice_email_list(localhost, git_path, tag_name, hostname, db_name, username, password)
 
     if notice_email_list:
         (short_info, commit_info) = get_commit_info(git_path, new_rev, tag_name)
