@@ -65,19 +65,20 @@ def have_read_access(cfg, user, repo_path):
 
     #检查仓库没有导入TSDS数据库中的平台权限
     if not permission_data or len(permission_data) == 0:
-        repo_dirs = [tmp for tmp.strip() in repo_path.split(backup_dir_path)[1].split('/') if tmp]
-        platform_path = backup_dir_path
-        for repo_dir in repo_dirs:
-            platform_path = os.path.join(platform_path, repo_dir)
-            permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
-                             "repository_platform WHERE path='%s' AND repository_server_id=%s" % \
-                             (platform_path+"/", repository_server_id)
-            cursor.execute(permission_sql)
-            permission_data = cursor.fetchone()
-            if permission_data and len(permission_data) != 0:
-                break
-        if not permission_data or len(permission_data) == 0:
-            return False
+        if len(repo_path.split(backup_dir_path)) == 2:
+            repo_dirs = [dir_name.strip() for dir_name in repo_path.split(backup_dir_path)[1].split('/') if dir_name]
+            platform_path = backup_dir_path
+            for repo_dir in repo_dirs:
+                platform_path = os.path.join(platform_path, repo_dir)
+                permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
+                                 "repository_platform WHERE path='%s' AND repository_server_id=%s" % \
+                                 (platform_path+"/", repository_server_id)
+                cursor.execute(permission_sql)
+                permission_data = cursor.fetchone()
+                if permission_data and len(permission_data) != 0:
+                    break
+            if not permission_data or len(permission_data) == 0:
+                return False
 
     permission = json_loads(permission_data[0])
 
@@ -143,20 +144,20 @@ def have_reference_write_access(cfg, user, reference_name, repo_path):
 
     #检查仓库没有导入TSDS数据库中的平台权限
     if not permission_data or len(permission_data) == 0:
-        repo_dirs = [tmp for tmp.strip() in repo_path.split(backup_dir_path)[1].split('/') if tmp]
-        platform_path = backup_dir_path
-        for repo_dir in repo_dirs:
-            platform_path = os.path.join(platform_path, repo_dir)
-            permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
-                             "repository_platform WHERE path='%s' AND repository_server_id=%s" % \
-                             (platform_path+"/", repository_server_id)
-            cursor.execute(permission_sql)
-            permission_data = cursor.fetchone()
-            if permission_data and len(permission_data) != 0:
-                break
-        if not permission_data or len(permission_data) == 0:
-            return False
-
+        if len(repo_path.split(backup_dir_path)) == 2:
+            repo_dirs = [dir_name.strip() for dir_name in repo_path.split(backup_dir_path)[1].split('/') if dir_name]
+            platform_path = backup_dir_path
+            for repo_dir in repo_dirs:
+                platform_path = os.path.join(platform_path, repo_dir)
+                permission_sql = "SELECT permission FROM repository_permission WHERE id IN(SELECT permission_id FROM " \
+                                 "repository_platform WHERE path='%s' AND repository_server_id=%s" % \
+                                 (platform_path+"/", repository_server_id)
+                cursor.execute(permission_sql)
+                permission_data = cursor.fetchone()
+                if permission_data and len(permission_data) != 0:
+                    break
+            if not permission_data or len(permission_data) == 0:
+                return False
     permission = json_loads(permission_data[0])
     #check group All in permission["read']
     if '1' in permission["write"]:
