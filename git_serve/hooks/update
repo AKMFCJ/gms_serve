@@ -14,7 +14,7 @@ from git_serve.access import have_reference_write_access
 from git_serve.issue import check_issue_key
 from git_serve.git_cmd import GitCmd
 
-pattern = r'^<(REQ|BUG|FUNC|DEBUG|PATCH|BASELINE)><([A-Z]{3,}\-\d+)><(.+)>$'
+pattern = r'^<(REQ|BUG|FUNC|DEBUG|PATCH|BASELINE)><([A-Z]{2,}\-\d+)><(.+)>$'
 
 
 def check_commit_msg(repo_path, old_rev, new_rev):
