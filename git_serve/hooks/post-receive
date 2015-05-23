@@ -110,7 +110,7 @@ def get_commit_notice_email_list(config_parser, repo_server_ip='', git_path='', 
         cursor = conn.cursor()
         #具体仓库的配置
         repository_query_sql = 'SELECT email_address FROM repository_commit_notice WHERE reference_name="%s" ' \
-                               'AND repository_server_ip="%s" AND repository_path="%s" ANT active=1 ' % \
+                               'AND repository_server_ip="%s" AND repository_path="%s" AND active=1 ' % \
                                (tag_name, repo_server_ip, git_path)
         cursor.execute(repository_query_sql)
         email_address_list = cursor.fetchone()
@@ -121,7 +121,7 @@ def get_commit_notice_email_list(config_parser, repo_server_ip='', git_path='', 
             platform_name = git_path.split('/home/git/repositories/')[1]
             platform_name = platform_name[:platform_name.find('/')]
             platform_query_sql = 'SELECT email_address FROM repository_commit_notice WHERE reference_name="%s" ' \
-                                 'AND repository_server_ip="%s" AND platform_name="%s" ANT active=1 ' % \
+                                 'AND repository_server_ip="%s" AND platform_name="%s" AND active=1 ' % \
                                  (tag_name, repo_server_ip, platform_name)
             cursor.execute(platform_query_sql)
             email_address_list = cursor.fetchone()
