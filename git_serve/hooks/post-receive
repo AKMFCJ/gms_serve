@@ -99,7 +99,8 @@ def get_commit_info(git_path='', new_rev='', tag_name=''):
     return short_info, '<br/>'.join(result)
 
 
-def get_commit_notice_email_list(repo_server_ip='', git_path='', tag_name='', host_ip='', db_name='', user_name='', password=''):
+def get_commit_notice_email_list(config_parser, repo_server_ip='', git_path='', tag_name='', host_ip='',
+                                 db_name='', user_name='', password=''):
     """
         获取项目的设置信息
     """
@@ -138,36 +139,13 @@ def get_commit_notice_email_list(repo_server_ip='', git_path='', tag_name='', ho
         cursor.close()
         conn.close()
     except MySQLdb.Error, e:
-        send_mail(["changjie.fan@tinno.com"], "提交的邮件通知发送失败", '连接Tup数据库失败')
+        send_mail(config_parser, ["changjie.fan@tinno.com"], "提交的邮件通知发送失败", '连接Tup数据库失败')
 
     return email_address_list
 
 
-def add_push_history(repo_path='', reference='', old_rev='', new_rev='', local_ip='', host_ip='', db_name='',
-                     user_name='', password=''):
-    """推送日志记入数据库中便于tsds解析
-    """
-
-    date_format = '%Y-%m-%d-%H-%M'
-    now = time.strftime(date_format, time.localtime())
-    try:
-        conn = MySQLdb.connect(host=host_ip, db=db_name, user=user_name, passwd=password)
-        cursor = conn.cursor()
-        sql = "insert into git_push_log set server_ip='%s',repository_path='%s',reference='%s',pstatus=0," \
-              "create_time='%s',old_revision='%s',new_revision='%s'" \
-              % (local_ip, repo_path, reference, now, old_rev, new_rev)
-
-        cursor.execute(sql)
-        conn.commit()
-        cursor.close()
-        conn.close()
-    except MySQLdb.Error, e:
-        send_mail(["changjie.fan@tinno.com"], "数据库记录Push history失败",
-                  'Git服务器Ip:%s<br>git仓库路径:%s<br>git分支:%s<br>更新时间:%s' %
-                  (local_ip, repo_path, reference, now))
-
-
-def repository_push_log(repo_path='', reference='', old_rev='', new_rev='', local_ip='', host_ip='', db_name='', user_name='', password=''):
+def repository_push_log(config_parser, repo_path='', reference='', old_rev='', new_rev='', local_ip='',
+                        host_ip='', db_name='', user_name='', password=''):
     """推送日志记入数据库中便于tsds解析
     """
 
@@ -185,7 +163,7 @@ def repository_push_log(repo_path='', reference='', old_rev='', new_rev='', loca
         cursor.close()
         conn.close()
     except MySQLdb.Error, e:
-        send_mail(["changjie.fan@tinno.com"], "Tup数据库记录Push history失败",
+        send_mail(config_parser, ["changjie.fan@tinno.com"], "Tup数据库记录Push history失败",
                   'Git服务器Ip:%s<br>git仓库路径:%s<br>git分支:%s<br>更新时间:%s' %
                   (local_ip, repo_path, reference, now))
 
@@ -225,8 +203,9 @@ if __name__ == "__main__":
         password = 'tup'
         pass
 
-    repository_push_log(git_path, tag_name, old_rev, new_rev, localhost, hostname, db_name, username, password)
-    notice_email_list = get_commit_notice_email_list(localhost, git_path, tag_name, hostname, db_name, username, password)
+    repository_push_log(config_parser, git_path, tag_name, old_rev, new_rev, localhost, hostname, db_name, username, password)
+    notice_email_list = get_commit_notice_email_list(config_parser, localhost, git_path, tag_name, hostname,
+                                                     db_name, username, password)
 
     if notice_email_list:
         (short_info, commit_info) = get_commit_info(git_path, new_rev, tag_name)
