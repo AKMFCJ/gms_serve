@@ -130,7 +130,7 @@ def get_commit_notice_email_list(config_parser, repo_server_ip='', git_path='', 
             else:
                 #原来直接用引用配置的实现
                 old_query_sql = 'SELECT email_address FROM repository_commit_notice WHERE ' \
-                                'reference_name="%s"  ANT active=1 ' % tag_name
+                                'reference_name="%s"  AND active=1 ' % tag_name
                 cursor.execute(old_query_sql)
                 email_address_list = cursor.fetchone()
                 if email_address_list:
@@ -204,8 +204,7 @@ if __name__ == "__main__":
         pass
 
     repository_push_log(config_parser, git_path, tag_name, old_rev, new_rev, localhost, hostname, db_name, username, password)
-    notice_email_list = get_commit_notice_email_list(config_parser, localhost, git_path, tag_name, hostname,
-                                                     db_name, username, password)
+    notice_email_list = get_commit_notice_email_list(config_parser, localhost, git_path, tag_name, hostname, db_name, username, password)
 
     if notice_email_list:
         (short_info, commit_info) = get_commit_info(git_path, new_rev, tag_name)
