@@ -83,7 +83,10 @@ def main(argv):
         if error_commit_list:
             print "\033[43;31;1m以下Commit的说明不符合规范:\033[0m\n"
 
-            print '\n'.join(error_commit_list)
+            try:
+                print u'\n'.join(error_commit_list)
+            except UnicodeEncodeError:
+                print "提交说明最后必须以英文字母开头"
             print '\n'
             print '\033[34m标准规范是:<REQ|BUG|FUNC|PATCH|DEBUG><JIRA_KEY><项目tag:说明>\033[0m'
             sys.exit(1)
