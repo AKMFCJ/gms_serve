@@ -77,26 +77,29 @@ def get_commit_info(git_path='', new_rev='', tag_name=''):
     :param tag_name: 提交的tag或branch名称
     """
 
-    os.chdir(git_path)
+    #os.chdir(git_path)
     result = []
-    commit_info = commands.getoutput('git show '+new_rev)
-    commit_info = commit_info.replace('<', '&lt;')
-    lines = commit_info.split('\n')
-    short_info = False
-    if len(lines) < 1000:
-        for tmp_line in lines:
-            if tmp_line.startswith('-'):
-                tmp_line = '<font color="red">'+tmp_line+'</font>'
-            elif tmp_line.startswith('+'):
-                tmp_line = '<font color="green">'+tmp_line+'</font>'
-            result.append(tmp_line)
+    status, commit_info = commands.getstatusoutput('git --git-dir=%s show %s' % (git_path, new_rev))
+    if status:
+        return False, commit_info
     else:
-        commit_info = commands.getoutput('git log -1 '+tag_name)
         commit_info = commit_info.replace('<', '&lt;')
-        result = commit_info.split('\n')
-        short_info = True
+        lines = commit_info.split('\n')
+        short_info = False
+        if len(lines) < 1000:
+            for tmp_line in lines:
+                if tmp_line.startswith('-'):
+                    tmp_line = '<font color="red">'+tmp_line+'</font>'
+                elif tmp_line.startswith('+'):
+                    tmp_line = '<font color="green">'+tmp_line+'</font>'
+                result.append(tmp_line)
+        else:
+            commit_info = commands.getoutput('git log -1 '+tag_name)
+            commit_info = commit_info.replace('<', '&lt;')
+            result = commit_info.split('\n')
+            short_info = True
 
-    return short_info, '<br/>'.join(result)
+        return True, short_info, '<br/>'.join(result)
 
 
 def get_commit_notice_email_list(config_parser, repo_server_ip='', git_path='', tag_name='', host_ip='',
@@ -207,12 +210,16 @@ if __name__ == "__main__":
     notice_email_list = get_commit_notice_email_list(config_parser, localhost, git_path, tag_name, hostname, db_name, username, password)
 
     if notice_email_list:
-        (short_info, commit_info) = get_commit_info(git_path, new_rev, tag_name)
-        git_path = git_path.split('/home/git/repositories')[1]
-        commit_info = '\n'.join([git_path, commit_info])
-        title = os.path.basename(git_path) + '___' + tag_name+"___项目更新通知邮件"
-        if short_info:
-            title = tag_name+" ___项目更新通知邮件(简略信息)"
+        (result, short_info, commit_info) = get_commit_info(git_path, new_rev, tag_name)
+        if result:
+            git_path = git_path.split('/home/git/repositories')[1]
+            commit_info = '\n'.join([git_path, commit_info])
+            title = os.path.basename(git_path) + '___' + tag_name+"___项目更新通知邮件"
+            if short_info:
+                title = tag_name+" ___项目更新通知邮件(简略信息)"
 
-        send_mail(config_parser, str(notice_email_list).split(';'), title, commit_info)
+            send_mail(config_parser, str(notice_email_list).split(';'), title, commit_info)
+        else:
+            send_mail(config_parser, ['changjie.fan@tinno.com'],
+                      os.path.basename(git_path) + '___' + tag_name+"___项目生成差异日志出错", short_info)
 
