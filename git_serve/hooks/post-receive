@@ -34,8 +34,8 @@ def send_mail(config_parser, to_list=[], sub='', content='', appendix_file=''):
     mail_host = config_parser.get("email", "host").strip("'")
     mail_user = config_parser.get("email", "username").strip("'")
     mail_pass = config_parser.get("email", "password").strip("'")
-    sender = config_parser.get("email", "sender").strip("'")
-
+    #sender = config_parser.get("email", "sender").strip("'")
+    sender = "tinnoscm@tinno.com"
     msg_root = MIMEMultipart()
      #解决中文乱码
     att_text = MIMEText(content, 'html', 'UTF-8')
