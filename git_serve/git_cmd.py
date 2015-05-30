@@ -35,7 +35,7 @@ class GitCmd():
             for message in info:
                 message = message.split('<-br->')
                 if len(message) == 2:
-                    changes.append(CommitObj(message=message[0], hex_sha=message[1]))
+                    changes.append(CommitObj(hex_sha=message[0], message=message[1]))
 
         return changes
 
