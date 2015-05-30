@@ -30,7 +30,7 @@ def check_commit_msg(repo_path, old_rev, new_rev):
         if m:
             commit_list.append((commit, m.groups()[1]))
         else:
-            error_commit_list.append('%s:%s' % (commit.hexsha, commit.message))
+            error_commit_list.append('%s:%s' % (commit.hex_sha, commit.message))
 
     return error_commit_list, commit_list
 

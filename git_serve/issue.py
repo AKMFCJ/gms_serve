@@ -38,7 +38,7 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
     for issue_num, issue_key, commit in change_commits:
         if issue_num not in records:
             has_error = True
-            message = '\n'.join([commit.hexsha, message, commit.message])
+            message = '\n'.join([commit.hex_sha, message, commit.message])
 
     if has_error:
         insert_sql = "insert into notice_repo_error_issue_key (repo_path, reference_name, committer, push_date, " \
