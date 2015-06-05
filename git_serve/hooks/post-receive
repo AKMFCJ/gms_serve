@@ -69,24 +69,22 @@ def send_mail(config_parser, to_list=[], sub='', content='', appendix_file=''):
     smtp.quit()
 
 
-def get_commit_info(git_path='', new_rev='', tag_name=''):
-    """
-        获取提交的详细信息
+def get_commit_info(git_path='', old_rev='', new_rev=''):
+    """生成两个commit之间所有提交的日志信息
     :param git_path: 仓库路径
+    :param new_rev: 旧的Commit Id
     :param new_rev: 新的Commit Id
-    :param tag_name: 提交的tag或branch名称
     """
 
-    #os.chdir(git_path)
     result = []
-    status, commit_info = commands.getstatusoutput('git --git-dir=%s show %s' % (git_path, new_rev))
+    status, commit_info = commands.getstatusoutput('git --git-dir=%s log -p %s..%s' % (git_path, old_rev, new_rev))
     if status:
         return False, commit_info
     else:
         commit_info = commit_info.replace('<', '&lt;')
         lines = commit_info.split('\n')
         short_info = False
-        if len(lines) < 1000:
+        if len(lines) < 2000:
             for tmp_line in lines:
                 if tmp_line.startswith('-'):
                     tmp_line = '<font color="red">'+tmp_line+'</font>'
@@ -94,10 +92,14 @@ def get_commit_info(git_path='', new_rev='', tag_name=''):
                     tmp_line = '<font color="green">'+tmp_line+'</font>'
                 result.append(tmp_line)
         else:
-            commit_info = commands.getoutput('git log -1 '+tag_name)
-            commit_info = commit_info.replace('<', '&lt;')
-            result = commit_info.split('\n')
-            short_info = True
+            status, commit_info = commands.getstatusoutput('git --git-dir=%s log --name-status %s..%s' %
+                                                           (git_path, old_rev, new_rev))
+            if status:
+                return False, commit_info
+            else:
+                commit_info = commit_info.replace('<', '&lt;')
+                result = commit_info.split('\n')
+                short_info = True
 
         return True, short_info, '<br/>'.join(result)
 
@@ -210,7 +212,7 @@ if __name__ == "__main__":
     notice_email_list = get_commit_notice_email_list(config_parser, localhost, git_path, tag_name, hostname, db_name, username, password)
 
     if notice_email_list:
-        (result, short_info, commit_info) = get_commit_info(git_path, new_rev, tag_name)
+        (result, short_info, commit_info) = get_commit_info(git_path, old_rev, new_rev)
         if result:
             git_path = git_path.split('/home/git/repositories')[1]
             commit_info = '\n'.join([git_path, commit_info])
