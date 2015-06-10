@@ -29,6 +29,9 @@ def check_commit_msg(repo_path, old_rev, new_rev):
         m = rp.match(commit.message)
         if m:
             commit_list.append((commit, m.groups()[1]))
+        #不处理合并Commit
+        elif commit.message.find('Merge') > -1:
+            continue
         else:
             error_commit_list.append('%s:%s' % (commit.hex_sha, commit.message))
 
