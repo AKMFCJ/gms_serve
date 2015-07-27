@@ -52,7 +52,7 @@ def serve(cfg, user, command, ):
     """仓库级权限控制"""
 
     if not command or command == 'info':
-        logger.info('SSH Key is OK')
+        logger.info('SSH Key validate is OK')
         sys.exit(0)
 
     if '\n' in command:
