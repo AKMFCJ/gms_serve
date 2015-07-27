@@ -9,8 +9,7 @@ import os
 from simplejson import loads as json_loads
 
 from git_serve.utils.util import DBConnect
-
-logger = logging.getLogger('git-serve')
+from git_serve.utils.Mylogging import logger
 
 
 def have_read_access(cfg, user, repo_path):

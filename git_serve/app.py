@@ -9,7 +9,7 @@ import errno
 import ConfigParser
 import time
 
-logger = logging.getLogger('git-serve')
+from git_serve.utils.Mylogging import logger
 
 
 class CannotReadConfigError(Exception):

@@ -8,7 +8,8 @@ import sys
 import commands
 from optparse import OptionParser
 
-from git_serve.utils.util import  create_repository_hook_link
+from git_serve.utils.util import create_repository_hook_link
+from git_serve.utils.Mylogging import logger
 
 
 class Main(object):
@@ -35,17 +36,22 @@ class Main(object):
         if not os.path.exists(path):
             os.makedirs(path)
         os.chdir(path)
-        (result, info) = commands.getstatusoutput('git init --bare')
+        command = 'git init --bare'
+        (result, info) = commands.getstatusoutput(command)
         if result:
+            logger.error('command:%s' % command)
+            logger.error(info)
             sys.exit(1)
 
         #创建hooks
         create_repository_hook_link(path)
 
         #创建初始化tag和分支
-        (result, info) = commands.getstatusoutput('GIT_WORK_TREE=%s git --git-dir="%s"  commit --allow-empty -m "init"'
-                                                  % (path, path))
+        command = 'GIT_WORK_TREE=%s git --git-dir="%s"  commit --allow-empty -m "init"' % (path, path)
+        (result, info) = commands.getstatusoutput(command)
         if result:
+            logger.error('command:%s' % command)
+            logger.error(info)
             sys.exit(1)
 
     @staticmethod
@@ -53,9 +59,11 @@ class Main(object):
         """创建初始tag"""
 
         for tag_name in tags:
-            (result, info) = commands.getstatusoutput('GIT_WORK_TREE=%s git --git-dir="%s" tag %s ' %
-                                                      (path, path, tag_name))
+            command = 'GIT_WORK_TREE=%s git --git-dir="%s" tag %s ' % (path, path, tag_name)
+            (result, info) = commands.getstatusoutput(command)
             if result:
+                logger.error('command:%s' % command)
+                logger.error(info)
                 sys.exit(1)
 
     @staticmethod
@@ -63,7 +71,9 @@ class Main(object):
         """创建初始tag"""
 
         for branch_name in branches:
-            (result, info) = commands.getstatusoutput('GIT_WORK_TREE=%s git --git-dir="%s" branch %s master' %
-                                                      (path, path, branch_name))
+            command = 'GIT_WORK_TREE=%s git --git-dir="%s" branch %s master' % (path, path, branch_name)
+            (result, info) = commands.getstatusoutput(command)
             if result:
+                logger.error('command:%s' % command)
+                logger.error(info)
                 sys.exit(1)

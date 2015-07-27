@@ -10,7 +10,7 @@ import sys
 import logging
 import shutil
 
-logger = logging.getLogger('git-serve')
+from git_serve.utils.Mylogging import logger
 
 
 class Main(object):
@@ -91,17 +91,17 @@ class Main(object):
 
     @staticmethod
     def create_git_serve_conf(git_serve_dir):
-            if not os.path.exists(os.path.join(git_serve_dir, 'conf')):
-                os.mkdir(os.path.join(git_serve_dir, 'conf'))
-            rfp = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                                    'git_serve/conf/git-serve.conf'), 'r')
-            wfp = open(os.path.join(git_serve_dir, 'conf', 'git-serve.conf'), 'w')
-            for line in rfp.readlines():
-                wfp.write(line)
-            wfp.write('[localhost]\n')
-            wfp.write('ip=%s\n' % util.get_localhost_ip("eth0"))
-            wfp.close()
-            rfp.close()
+        if not os.path.exists(os.path.join(git_serve_dir, 'conf')):
+            os.mkdir(os.path.join(git_serve_dir, 'conf'))
+        rfp = open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                                'git_serve/conf/git-serve.conf'), 'r')
+        wfp = open(os.path.join(git_serve_dir, 'conf', 'git-serve.conf'), 'w')
+        for line in rfp.readlines():
+            wfp.write(line)
+        wfp.write('[localhost]\n')
+        wfp.write('ip=%s\n' % util.get_localhost_ip("eth0"))
+        wfp.close()
+        rfp.close()
 
     @staticmethod
     def create_hook_link(src_file_names=[], src_path='', dst_path_list=[]):

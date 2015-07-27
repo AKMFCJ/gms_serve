@@ -13,8 +13,7 @@ import ConfigParser
 import shutil
 
 from git_serve.utils.util import create_hook_link
-
-logger = logging.getLogger('git-serve')
+from git_serve.utils.Mylogging import logger
 
 
 class Main(object):
@@ -31,6 +30,7 @@ class Main(object):
         if not os.path.exists(ssh):
             util.mk_dir(os.path.expanduser('~/.ssh'), 0700)
         else:
+            logger.info('init')
             if os.path.exists(os.path.join(ssh, 'authorized_keys')):
                 ssh_fp = open(os.path.join(ssh, 'authorized_keys'), 'r')
                 if not ssh_fp.readline().startswith("###git-serve Don't Edit"):
