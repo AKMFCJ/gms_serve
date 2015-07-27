@@ -61,6 +61,9 @@ def serve(cfg, user, command, ):
         # if/when needed
         raise UnknownCommandError()
 
+    if verb == 'info':
+        logger.info('SSH Key is OK')
+
     if verb == 'git':
         try:
             sub_verb, args = args.split(None, 1)
