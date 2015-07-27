@@ -14,7 +14,7 @@ import os
 
 #DIR_NAME = os.path.dirname(os.path.abspath(__file__))
 
-LOG_DIR = os.path.join(os.path.expanduser('~'), '.git_serve', 'logs')
+LOG_DIR = os.path.join(os.path.expanduser('~'), '.git-serve', 'logs')
 LOG_FILE = os.path.join(LOG_DIR, 'git-server-'+datetime.datetime.now().strftime('%Y-%m-%d')+'.log')
 logging.basicConfig(
     level=logging.INFO,
