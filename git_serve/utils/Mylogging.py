@@ -36,6 +36,7 @@ logger.addHandler(fileLog)
 #输出到控制台
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
+formatter = logging.Formatter('%(message)s')
 console.setFormatter(formatter)
 logger.addHandler(console)
 

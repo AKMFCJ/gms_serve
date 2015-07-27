@@ -51,6 +51,10 @@ class ReadAccessDenied(AccessDenied):
 def serve(cfg, user, command, ):
     """仓库级权限控制"""
 
+    if not command or command == 'info':
+        logger.info('SSH Key is OK')
+        sys.exit(0)
+
     if '\n' in command:
         raise CommandMayNotContainNewlineError()
 
@@ -60,9 +64,6 @@ def serve(cfg, user, command, ):
         # all known "git-foo" commands take one argument; improve
         # if/when needed
         raise UnknownCommandError()
-
-    if verb == 'info':
-        logger.info('SSH Key is OK')
 
     if verb == 'git':
         try:
