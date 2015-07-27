@@ -69,3 +69,17 @@ setup(
     ],
 )
 
+
+if __name__ == '__main__':
+
+    current_user_dir = os.path.expanduser('~')
+    current_user_name = os.path.basename(current_user_dir)
+    log_dir = os.path.join(current_user_dir, '.git_serve', 'logs')
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+        import commands
+        status, info = commands.getstatusoutput('sudo chown -R %s:%s %s ' % (current_user_name, current_user_name,
+                                                                             os.path.dirname(log_dir)))
+        print status, info
+
+    setup()
