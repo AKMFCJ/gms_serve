@@ -34,8 +34,8 @@ fileLog.setLevel(logging.INFO)
 logger.addHandler(fileLog)
 
 #输出到控制台
-#console = logging.StreamHandler()
-#console.setLevel(logging.INFO)
-#console.setFormatter(formatter)
-#logger.addHandler(console)
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+console.setFormatter(formatter)
+logger.addHandler(console)
 

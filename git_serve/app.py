@@ -41,7 +41,7 @@ class App(object):
         except CannotReadConfigError, e:
             logger.error(str(e))
             sys.exit(1)
-        self.setup_logging(cfg)
+        #self.setup_logging(cfg)
         self.handle_args(parser, cfg, options, args)
 
     def setup_basic_logging(self):
