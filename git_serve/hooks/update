@@ -14,6 +14,9 @@ from git_serve.access import have_reference_write_access
 from git_serve.issue import check_issue_key
 from git_serve.git_cmd import GitCmd
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 pattern = r'^<(REQ|BUG|FUNC|DEBUG|PATCH|BASELINE|MERGE)><([A-Z]{2,}\-\d+)><(.+)>$'
 
 
@@ -30,7 +33,7 @@ def check_commit_msg(repo_path, old_rev, new_rev):
         if m:
             commit_list.append((commit, m.groups()[1]))
         #不处理合并Commit
-        elif commit.message.find('Merge') > -1:
+        elif commit.message.upper().find('MERGE') > -1:
             continue
         else:
             error_commit_list.append('%s:%s' % (commit.hex_sha, commit.message))
