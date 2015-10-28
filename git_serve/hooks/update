@@ -98,12 +98,12 @@ def main(argv):
             sys.exit(1)
 
         #检查提交说明中的ISSUE_KEY是否真实有效(暂不执行)
-        #(result, message) = check_issue_key(cfg, git_user, reference_name, full_repo_path, commit_list)
+        (result, message) = check_issue_key(cfg, git_user, reference_name, full_repo_path, commit_list)
         #ISSUE KEY正确
-        #if not result:
-        #    print "\033[43;31;1mJIRA_KEY在jira数据库中不存在\033[0m\n"
-        #    print "\033[34m%s\033[0m" % message
-        #    sys.exit(1)
+        if not result:
+            print "\033[43;31;1mJIRA_KEY在jira数据库中不存在\033[0m\n"
+            print "\033[34m%s\033[0m" % message
+            sys.exit(1)
 
     #检查提交权限
     (result, message) = have_reference_write_access(cfg, git_user, reference_name, repo_path)

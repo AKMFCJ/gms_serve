@@ -41,15 +41,15 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
             message = '\n'.join([commit.hex_sha, message, commit.message])
 
     if has_error:
-        insert_sql = "insert into notice_repo_error_issue_key (repo_path, reference_name, committer, push_date, " \
-                     "message)  values(%s, %s, %s, %s, %s)"
-
-        db_connect = DBConnect(cfg.get('database', 'hostname').strip("'"),
-                               cfg.get('database', 'db_name').strip("'"),
-                               cfg.get('database', 'username').strip("'"),
-                               cfg.get('database', 'password').strip("'"),
-                               cfg.get('database', 'charset').strip("'"))
-        db_connect.execute_many(insert_sql, [(repo_path, reference_name, git_user, push_date, message)])
+        # insert_sql = "insert into notice_repo_error_issue_key (repo_path, reference_name, committer, push_date, " \
+        #              "message)  values(%s, %s, %s, %s, %s)"
+        #
+        # db_connect = DBConnect(cfg.get('database', 'hostname').strip("'"),
+        #                        cfg.get('database', 'db_name').strip("'"),
+        #                        cfg.get('database', 'username').strip("'"),
+        #                        cfg.get('database', 'password').strip("'"),
+        #                        cfg.get('database', 'charset').strip("'"))
+        # db_connect.execute_many(insert_sql, [(repo_path, reference_name, git_user, push_date, message)])
 
         #发送提醒邮件
         #query_sql = "select email from notice_reference_commit_email where reference_name='%s' " \
