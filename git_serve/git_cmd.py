@@ -35,7 +35,10 @@ class GitCmd():
             for message in info:
                 message = message.split('<-br->')
                 if len(message) == 2:
-                    changes.append(CommitObj(hex_sha=message[0], message=message[1]))
+                    if message[1].find('Change-Id:') > 0:
+                        changes.append(CommitObj(hex_sha=message[0], message=message[1].split('Change-Id:')[0]))
+                    else:
+                        changes.append(CommitObj(hex_sha=message[0], message=message[1]))
 
         return changes
 

@@ -97,7 +97,7 @@ def main(argv):
             print '\033[34m标准规范是:<REQ|BUG|FUNC|PATCH|DEBUG><JIRA_KEY><项目tag:说明>\033[0m'
             sys.exit(1)
 
-        #检查提交说明中的ISSUE_KEY是否真实有效(暂不执行)
+        #检查提交说明中的ISSUE_KEY是否真实有效
         (result, message) = check_issue_key(cfg, git_user, reference_name, full_repo_path, commit_list)
         #ISSUE KEY正确
         if not result:
