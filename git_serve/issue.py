@@ -26,6 +26,9 @@ def check_issue_key(cfg, git_user, reference_name, repo_path, commits):
         issue_num_list.append(issue_num)
         change_commits.append((issue_num, issue_key, commit))
 
+    if not issue_num_list and not change_commits:
+        return True, ''
+    
     #判断issue key在数据库中是否存在
     query_sql = "select issue.issuenum from jiraissue issue join project pro where issue.issuenum in (%s) and " \
                 "issue.project=pro.id and  pro.pkey='%s'" % (','.join(issue_num_list), project_key)
