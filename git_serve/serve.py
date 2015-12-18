@@ -10,8 +10,7 @@ import sys
 from git_serve.app import App
 from git_serve.access import have_read_access
 
-from git_serve.utils.Mylogging import logger
-
+logger = logging.getLogger('git-serve')
 
 COMMANDS_READONLY = ['git-upload-pack', 'git upload-pack', ]
 COMMANDS_WRITE = ['git-receive-pack', 'git receive-pack', ]
@@ -48,50 +47,6 @@ class ReadAccessDenied(AccessDenied):
     """no repository CLONE permission"""
 
 
-def serve(cfg, user, command, ):
-    """仓库级权限控制"""
-
-    if not command or command == 'info':
-        logger.info('SSH Key validate is OK')
-        sys.exit(0)
-
-    if '\n' in command:
-        raise CommandMayNotContainNewlineError()
-
-    try:
-        verb, args = command.split(None, 1)
-    except ValueError:
-        raise UnknownCommandError()
-
-    if verb == 'git':
-        try:
-            sub_verb, args = args.split(None, 1)
-        except ValueError:
-            raise UnknownCommandError()
-        verb = '%s %s' % (verb, sub_verb)
-
-    if verb not in COMMANDS_WRITE and verb not in COMMANDS_READONLY:
-        raise UnknownCommandError()
-
-    repo_path = args.strip("'")
-
-    # 仓库级读写权限判断
-    is_write = False
-    if verb in COMMANDS_READONLY:
-        if not have_read_access(cfg, user, access_repo_path):
-            raise ReadAccessDenied()
-    elif verb in COMMANDS_WRITE:
-        is_write = True
-        if not have_read_access(cfg, user, access_repo_path):
-            raise WriteAccessDenied()
-
-    # 仓库绝对路径的拼装
-    full_path = os.path.join('repositories', repo_path)
-    new_cmd = "%(verb)s '%(path)s'" % dict(verb=verb, path=full_path, )
-
-    return user, new_cmd, full_path, access_repo_path, is_write
-
-
 class Main(App):
     def create_parser(self):
         parser = super(Main, self).create_parser()
@@ -99,11 +54,57 @@ class Main(App):
         parser.set_description('Allow restricted git operations under DIR')
         return parser
 
+    def serve(self, cfg, user, command, ):
+        """仓库级权限控制"""
+
+        if not command or command == 'info':
+            logger.info('SSH Key validate is OK')
+            sys.exit(0)
+
+        if '\n' in command:
+            raise CommandMayNotContainNewlineError()
+
+        try:
+            verb, args = command.split(None, 1)
+        except ValueError:
+            raise UnknownCommandError()
+
+        if verb == 'git':
+            try:
+                sub_verb, args = args.split(None, 1)
+            except ValueError:
+                raise UnknownCommandError()
+            verb = '%s %s' % (verb, sub_verb)
+
+        if verb not in COMMANDS_WRITE and verb not in COMMANDS_READONLY:
+            raise UnknownCommandError()
+
+        repo_path = args.strip("'")
+        logger.info("repo_path:%s" % repo_path)
+        # Git仓库的绝对路径
+        access_repo_path = os.path.join(cfg.get('repository', 'root_path'), repo_path)
+
+        # 仓库级读写权限判断
+        is_write = False
+        if verb in COMMANDS_READONLY:
+            if not have_read_access(cfg, user, access_repo_path):
+                raise ReadAccessDenied()
+        elif verb in COMMANDS_WRITE:
+            is_write = True
+            if not have_read_access(cfg, user, access_repo_path):
+                raise WriteAccessDenied()
+
+        # 仓库绝对路径的拼装
+        full_path = os.path.join('repositories', repo_path)
+        new_cmd = "%(verb)s '%(path)s'" % dict(verb=verb, path=full_path, )
+
+        return user, new_cmd, full_path, access_repo_path, is_write
+
     def handle_args(self, parser, cfg, options, args):
         try:
             (user,) = args
         except ValueError:
-            Main.logger.error('Missing argument USER.')
+            logger.error('Missing argument USER.')
 
         ssh_cmd = os.environ.get('SSH_ORIGINAL_COMMAND', None)
         if ssh_cmd is None:
@@ -111,7 +112,7 @@ class Main(App):
             sys.exit(1)
 
         try:
-            user, git_cmd, repo_path, access_repo_path, is_write = serve(cfg=cfg, user=user, command=ssh_cmd, )
+            user, git_cmd, repo_path, access_repo_path, is_write = self.serve(cfg=cfg, user=user, command=ssh_cmd, )
         except ServingError, e:
             logger.error(u'\033[43;31;1m %s:%s\033[0m' % (user, e))
             sys.exit(1)

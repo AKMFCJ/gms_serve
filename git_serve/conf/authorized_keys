@@ -1,0 +1,2 @@
+###git-serve Don't Edit
+command="git-serve changjie.fan",no-port-forwarding,no-X11-forwarding,no-agent-forwarding,no-pty ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA7IgKr7jOnQnHMDi4G2hNqFfz/K9SJP8bvqqMmpqJv7N4+hFt7lsjFDONIwklDXS9NxuCJWiyzFK7A+vAIX6hBDD3dZCOlviJIQ2wWzNMMzAd9RpHuV1OW9SRXMfqzvhQBrK4xkWecKMRTl4RmRtpimwhYASt62d9hNRM82vMWubEcUAFIXaMPvNKCiW66ETU0NOMo17/ceYoddqYO5Gq/7HDKe8rF4Uh3iEI/9G+4MWTIADFf+aLx2AzLBas8vhjMwdg8jP5SegNVirc3x/CNIw/pP7R9PZp1aPHVxMLdp+1aoP1iySjaHqvHHYNOJVTfBsBwVNFClinrcKZ6hanIw== ubuntu@ubuntu

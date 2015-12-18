@@ -10,8 +10,6 @@ import sys
 import logging
 import shutil
 
-from git_serve.utils.Mylogging import logger
-
 
 class Main(object):
     @staticmethod

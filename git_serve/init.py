@@ -13,7 +13,6 @@ import ConfigParser
 import shutil
 
 from git_serve.utils.util import create_hook_link
-from git_serve.utils.Mylogging import logger
 
 
 class Main(object):

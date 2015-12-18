@@ -7,9 +7,7 @@ import sys
 import optparse
 import errno
 import ConfigParser
-import time
-
-from git_serve.utils.Mylogging import logger
+import datetime
 
 
 class CannotReadConfigError(Exception):
@@ -25,7 +23,6 @@ class ConfigFileDoesNotExistError(CannotReadConfigError):
 
 class App(object):
     name = None
-    logger = None
 
     def run(class_):
         app = class_()
@@ -42,7 +39,7 @@ class App(object):
         except CannotReadConfigError, e:
             logger.error(str(e))
             sys.exit(1)
-        #self.setup_logging(cfg)
+        self.setup_logging(cfg)
         self.handle_args(parser, cfg, options, args)
 
     def setup_basic_logging(self):
@@ -51,16 +48,25 @@ class App(object):
     def setup_logging(self, cfg):
         """初始化日志配置"""
 
-        log_file_name = time.strftime('%Y-%m-%d', time.localtime())+'_log.txt'
+        log_dir = os.path.expanduser('~/.git-serve/logs/')
+        log_file = datetime.datetime.now().strftime('%Y-%m-%d')+'.log'
+        info_level = cfg.get('log', 'log_level') or logging.INFO
         logging.basicConfig(
-            level=cfg.get('log', 'log_level') or logging.INFO,
-            format='%(asctime)s: %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+            level=info_level,
+            format='',
             datefmt='%Y-%m-%d/%H:%M:%S',
-            filename=os.path.expanduser('~/.git-serve/logs/%s' % log_file_name),
+            filename=os.path.join(log_dir,log_file),
             filemode='a'
-        )
-        App.logger = logging.getLogger('git-serve')
+            )
 
+        file_handler = logging.FileHandler(os.path.join(log_dir,log_file),'w')
+        formatter = logging.Formatter('%(asctime)s %(name)s[line:%(lineno)d]:%(levelname)s %(message)s')
+        file_handler.setFormatter(formatter)
+        logging.root.addHandler(file_handler)
+
+        console = logging.StreamHandler()
+        console.setLevel(info_level)
+        logging.root.addHandler(console)
 
     def create_config(self, options):
         cfg = ConfigParser.RawConfigParser()

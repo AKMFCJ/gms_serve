@@ -1,15 +1,20 @@
 #!/usr/bin/python
 # -*- coding:utf-8 -*-
 import os
+import sys
 import shutil
 import commands
+import socket
+import fcntl
+import ConfigParser
+import struct
 from setuptools import setup, find_packages
 
 
 def subdir_contents(path_list):
     all_file = []
     for path in path_list:
-        for root_path, dirs , files in os.walk(path):
+        for root_path, dirs, files in os.walk(path):
             for file_name in files:
                 all_file.append(os.path.join(root_path, file_name))
     print all_file
@@ -66,6 +71,19 @@ def _setup():
     )
 
 
+def get_local_ip(ifname='eth0'):
+    """
+    获取本机Ip地址
+    """
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,  # SIOCGIFADDR
+        struct.pack('256s', ifname[:15])
+    )[20:24])
+
+
 def main():
     """
     安装软件
@@ -76,13 +94,10 @@ def main():
 
     # 配置日志目录
     current_user_dir = os.path.expanduser('~')
-    current_user_name = os.path.basename(current_user_dir)
+    current_user_name = os.getlogin()
     log_dir = os.path.join(current_user_dir, '.git-serve', 'logs')
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-        status, info = commands.getstatusoutput('sudo chown -R %s:%s %s ' % (current_user_name, current_user_name,
-                                                                             os.path.dirname(log_dir)))
-        print status, info
 
     # 初始化配置文件
     config_dir = os.path.join(current_user_dir, '.git-serve', 'conf')
@@ -91,6 +106,21 @@ def main():
     config_file_path = os.path.join(config_dir, 'git-serve.conf')
     if not os.path.exists(config_file_path):
         shutil.copy2('git_serve/conf/git-serve.conf', config_dir)
+        cfg = ConfigParser.RawConfigParser()
+        cfg.read(config_file_path)
+        cfg.set('localhost', 'ip', get_local_ip())
+        cfg.set('repository', 'root_path',
+                cfg.get('repository', 'root_path').replace('/git/', '/%s/' % current_user_name))
+        cfg.write(open(config_file_path, 'w'))
+
+    # 修改.git的权限
+    status, info = commands.getstatusoutput('sudo chown -R %s:%s %s ' %
+                                            (current_user_name, current_user_name, os.path.dirname(log_dir)))
+    if status:
+        print u"修改配置目录的权限出错了"
+        print info
+        sys.exit(1)
+
 
 if __name__ == '__main__':
     main()

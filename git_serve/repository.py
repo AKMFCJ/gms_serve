@@ -9,7 +9,6 @@ import commands
 from optparse import OptionParser
 
 from git_serve.utils.util import create_repository_hook_link
-from git_serve.utils.Mylogging import logger
 
 
 class Main(object):
