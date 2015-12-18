@@ -25,6 +25,7 @@ class ConfigFileDoesNotExistError(CannotReadConfigError):
 
 class App(object):
     name = None
+    logger = None
 
     def run(class_):
         app = class_()
@@ -51,16 +52,15 @@ class App(object):
         """初始化日志配置"""
 
         log_file_name = time.strftime('%Y-%m-%d', time.localtime())+'_log.txt'
-        formatter = logging.Formatter("%(asctime)s %(filename)s %(levelname)s %(message)s")
-        log_file = os.path.expanduser('~/.git-serve/logs/%s' % log_file_name)
-        if not os.path.exists(log_file):
-            open(log_file, 'w').close()
-        handler = logging.FileHandler(log_file)
-        handler.setFormatter(formatter)
-        logging.root.addHandler(handler)
+        logging.basicConfig(
+            level=cfg.get('log', 'log_level') or logging.INFO,
+            format='%(asctime)s: %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
+            datefmt='%Y-%m-%d/%H:%M:%S',
+            filename=os.path.expanduser('~/.git-serve/logs/%s' % log_file_name),
+            filemode='a'
+        )
+        App.logger = logging.getLogger('git-serve')
 
-        log_level = cfg.get('log', 'log_level')
-        logging.root.setLevel(log_level)
 
     def create_config(self, options):
         cfg = ConfigParser.RawConfigParser()
@@ -87,4 +87,4 @@ class App(object):
 
     def handle_args(self, parser, cfg, options, args):
         if args:
-            logger.error('not expecting arguments')
+            App.logger.error('not expecting arguments')

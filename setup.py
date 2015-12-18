@@ -1,23 +1,17 @@
 #!/usr/bin/python
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 import os
+import shutil
+import commands
 from setuptools import setup, find_packages
 
 
 def subdir_contents(path_list):
     all_file = []
     for path in path_list:
-        top_level_path = [os.path.join(path, tmp) for tmp in os.listdir(path)]
-        for child_file in top_level_path:
-            if os.path.isdir(child_file):
-                child_folder = [os.path.join(child_file, tmp) for tmp in os.listdir(child_file)]
-                for tmp in child_folder:
-                    if os.path.isdir(tmp):
-                        top_level_path.append(tmp)
-                    else:
-                        all_file.append(tmp[tmp.find('/')+1:])
-            else:
-                all_file.append(child_file[child_file.find('/')+1:])
+        for root_path, dirs , files in os.walk(path):
+            for file_name in files:
+                all_file.append(os.path.join(root_path, file_name))
     print all_file
     return all_file
 
@@ -50,10 +44,10 @@ def _setup():
 
         entry_points={
             'console_scripts': [
-                #ssh连接是运行的程序
+                # ssh连接是运行的程序
                 'git-serve = git_serve.serve:Main.run',
-                #'git-serve-run-hook = git-serve.run_hook:Main.run',
-                #服务器上git-serve初始化
+                # 'git-serve-run-hook = git-serve.run_hook:Main.run',
+                # 服务器上git-serve初始化
                 'git-serve-init = git_serve.init:Main.run',
                 'git-serve-update = git_serve.update:Main.run',
                 'git-serve-repo = git_serve.repository:Main.run',
@@ -67,21 +61,37 @@ def _setup():
             # hook, this will make gitosis-admin settings not update
             # (fixed in 0.6c5, maybe earlier)
             'setuptools>=0.6c5',
-            #'MySQLdb>=1.2.3',
+            # 'MySQLdb>=1.2.3',
         ],
     )
 
 
-if __name__ == '__main__':
+def main():
+    """
+    安装软件
+    设置配置目录和文件
+    """
+    # 安装
+    _setup()
 
+    # 配置日志目录
     current_user_dir = os.path.expanduser('~')
     current_user_name = os.path.basename(current_user_dir)
     log_dir = os.path.join(current_user_dir, '.git-serve', 'logs')
     if not os.path.exists(log_dir):
         os.makedirs(log_dir)
-        import commands
         status, info = commands.getstatusoutput('sudo chown -R %s:%s %s ' % (current_user_name, current_user_name,
                                                                              os.path.dirname(log_dir)))
         print status, info
 
-    _setup()
+    # 初始化配置文件
+    config_dir = os.path.join(current_user_dir, '.git-serve', 'conf')
+    if not os.path.exists(config_dir):
+        os.makedirs(config_dir)
+    config_file_path = os.path.join(config_dir, 'git-serve.conf')
+    if not os.path.exists(config_file_path):
+        shutil.copy2('git_serve/conf/git-serve.conf', config_dir)
+
+if __name__ == '__main__':
+    main()
+
