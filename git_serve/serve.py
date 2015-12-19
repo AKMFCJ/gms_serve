@@ -8,9 +8,10 @@ import os
 import sys
 
 from git_serve.app import App
-from git_serve.access import have_read_access
+from git_serve.access import read_permission_config
+from git_serve.utils.Mylogging import logger
+from git_serve.utils.DBConnect import DBConnect
 
-logger = logging.getLogger('git-serve')
 
 COMMANDS_READONLY = ['git-upload-pack', 'git upload-pack', ]
 COMMANDS_WRITE = ['git-receive-pack', 'git receive-pack', ]
@@ -48,6 +49,7 @@ class ReadAccessDenied(AccessDenied):
 
 
 class Main(App):
+
     def create_parser(self):
         parser = super(Main, self).create_parser()
         parser.set_usage('%prog [OPTS] USER')
@@ -79,26 +81,37 @@ class Main(App):
         if verb not in COMMANDS_WRITE and verb not in COMMANDS_READONLY:
             raise UnknownCommandError()
 
+        db_connect = DBConnect(cfg.get('database', 'hostname').strip("'"),
+                               cfg.get('database', 'db_name').strip("'"),
+                               cfg.get('database', 'username').strip("'"),
+                               cfg.get('database', 'password').strip("'"),
+                               cfg.get('database', 'charset').strip("'"))
+
         repo_path = args.strip("'")
         logger.info("repo_path:%s" % repo_path)
         # Git仓库的绝对路径
         access_repo_path = os.path.join(cfg.get('repository', 'root_path'), repo_path)
 
         # 仓库级读写权限判断
+        result, permission_config = read_permission_config(db_connect, cfg, user, access_repo_path)
+
         is_write = False
         if verb in COMMANDS_READONLY:
-            if not have_read_access(cfg, user, access_repo_path):
+            logger.info('{0} read {1}'.format(user, access_repo_path))
+            if not result:
+                print u"\033[43;31;1m %s 没有仓库的读权限 %s\033[0m\n" % (user, repo_path)
                 raise ReadAccessDenied()
+
         elif verb in COMMANDS_WRITE:
+            logger.info('{0} write {1}'.format(user, access_repo_path))
             is_write = True
-            if not have_read_access(cfg, user, access_repo_path):
-                raise WriteAccessDenied()
+            if not result:
+                print u"\033[43;31;1m %s 没有仓库的写权限 %s\033[0m\n" % (user, repo_path)
 
         # 仓库绝对路径的拼装
-        full_path = os.path.join('repositories', repo_path)
-        new_cmd = "%(verb)s '%(path)s'" % dict(verb=verb, path=full_path, )
+        new_cmd = "%(verb)s '%(path)s'" % dict(verb=verb, path=access_repo_path, )
 
-        return user, new_cmd, full_path, access_repo_path, is_write
+        return new_cmd, access_repo_path, is_write, permission_config
 
     def handle_args(self, parser, cfg, options, args):
         try:
@@ -110,9 +123,8 @@ class Main(App):
         if ssh_cmd is None:
             logging.error('Need SSH_ORIGINAL_COMMAND in environment.')
             sys.exit(1)
-
         try:
-            user, git_cmd, repo_path, access_repo_path, is_write = self.serve(cfg=cfg, user=user, command=ssh_cmd, )
+            git_cmd, access_repo_path, is_write, permission_config = self.serve(cfg=cfg, user=user, command=ssh_cmd, )
         except ServingError, e:
             logger.error(u'\033[43;31;1m %s:%s\033[0m' % (user, e))
             sys.exit(1)
@@ -121,10 +133,11 @@ class Main(App):
         if is_write:
             # 提交的用户名称, 配置在~/.ssh/authorized_keys中
             os.putenv('git_user', user)
-            # 提交仓库的相对路径, 从repositories/开始
-            os.putenv('repo_path', repo_path)
+            # 仓库的权限配置
+            os.putenv('permission_config', permission_config)
+            # 仓库完整的绝对路径
             os.putenv('access_repo_path', access_repo_path)
 
         os.execvp('git', ['git', 'shell', '-c', git_cmd])
-        Main.logger.error('Cannot execute git-shell.')
+        logger.error('Cannot execute git-shell.')
         sys.exit(1)

@@ -7,7 +7,8 @@ import sys
 import optparse
 import errno
 import ConfigParser
-import datetime
+
+from git_serve.utils.Mylogging import logger
 
 
 class CannotReadConfigError(Exception):
@@ -30,7 +31,6 @@ class App(object):
     run = classmethod(run)
 
     def main(self):
-        self.setup_basic_logging()
         parser = self.create_parser()
         (options, args) = parser.parse_args()
         cfg = self.create_config(options)
@@ -39,34 +39,8 @@ class App(object):
         except CannotReadConfigError, e:
             logger.error(str(e))
             sys.exit(1)
-        self.setup_logging(cfg)
+
         self.handle_args(parser, cfg, options, args)
-
-    def setup_basic_logging(self):
-        logging.basicConfig()
-
-    def setup_logging(self, cfg):
-        """初始化日志配置"""
-
-        log_dir = os.path.expanduser('~/.git-serve/logs/')
-        log_file = datetime.datetime.now().strftime('%Y-%m-%d')+'.log'
-        info_level = cfg.get('log', 'log_level') or logging.INFO
-        logging.basicConfig(
-            level=info_level,
-            format='',
-            datefmt='%Y-%m-%d/%H:%M:%S',
-            filename=os.path.join(log_dir,log_file),
-            filemode='a'
-            )
-
-        file_handler = logging.FileHandler(os.path.join(log_dir,log_file),'w')
-        formatter = logging.Formatter('%(asctime)s %(name)s[line:%(lineno)d]:%(levelname)s %(message)s')
-        file_handler.setFormatter(formatter)
-        logging.root.addHandler(file_handler)
-
-        console = logging.StreamHandler()
-        console.setLevel(info_level)
-        logging.root.addHandler(console)
 
     def create_config(self, options):
         cfg = ConfigParser.RawConfigParser()
@@ -93,4 +67,4 @@ class App(object):
 
     def handle_args(self, parser, cfg, options, args):
         if args:
-            App.logger.error('not expecting arguments')
+            logger.error('not expecting arguments')

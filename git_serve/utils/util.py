@@ -10,35 +10,10 @@ import fcntl
 import struct
 import time
 
-from MySQLdb import connect
-
 
 def get_current_time(format_str='%Y-%m-%d %H:%M:%S'):
     """获取当前时间"""
     return time.strftime(format_str, time.localtime())
-
-
-class DBConnect():
-    def __init__(self, host, db, user, password, charset='utf8'):
-        self.conn = connect(host=host, db=db, user=user, passwd=password, charset=charset)
-        self.cursor = self.conn.cursor()
-
-    def db_close(self):
-        """关闭数据库连接"""
-
-        self.cursor.close()
-        self.conn.close()
-
-    def execute_query(self, sql=''):
-        """执行查询语句"""
-        self.cursor.execute(sql)
-        return self.cursor.fetchall()
-
-    def execute_many(self, insert_sql, values=[]):
-        """执行批量插入语句"""
-        self.cursor.executemany(insert_sql, values)
-        self.conn.commit()
-
 
 def mk_dir(*a, **kw):
     try:

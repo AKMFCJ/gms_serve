@@ -4,11 +4,10 @@ import os
 import sys
 import shutil
 import commands
-import socket
-import fcntl
 import ConfigParser
-import struct
 from setuptools import setup, find_packages
+
+from git_serve.utils.util import get_localhost_ip
 
 
 def subdir_contents(path_list):
@@ -71,19 +70,6 @@ def _setup():
     )
 
 
-def get_local_ip(ifname='eth0'):
-    """
-    获取本机Ip地址
-    """
-
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
-        s.fileno(),
-        0x8915,  # SIOCGIFADDR
-        struct.pack('256s', ifname[:15])
-    )[20:24])
-
-
 def main():
     """
     安装软件
@@ -108,7 +94,7 @@ def main():
         shutil.copy2('git_serve/conf/git-serve.conf', config_dir)
         cfg = ConfigParser.RawConfigParser()
         cfg.read(config_file_path)
-        cfg.set('localhost', 'ip', get_local_ip())
+        cfg.set('localhost', 'ip', get_localhost_ip())
         cfg.set('repository', 'root_path',
                 cfg.get('repository', 'root_path').replace('/git/', '/%s/' % current_user_name))
         cfg.write(open(config_file_path, 'w'))
