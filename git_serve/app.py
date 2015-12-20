@@ -1,7 +1,9 @@
-#-*- encoding:utf-8-*_
+# -*- encoding:utf-8-*_
 __author__ = 'changjie.fan'
-"""程序入口的基类，加载通用设置和处理log设置"""
-import logging
+"""
+程序入口的基类，加载通用设置和处理log设置
+"""
+
 import os
 import sys
 import optparse

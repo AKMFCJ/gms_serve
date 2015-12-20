@@ -22,7 +22,7 @@ def send_mail(cfg, subject='', message='', recipient_list=[], appendix_file=''):
     send_mail(cfg,"sub","content", "aaa@163.com")
     """
 
-            #设置服务器、用户名、口令及邮箱的后缀
+    # 设置服务器、用户名、口令及邮箱的后缀
     mail_host = cfg.get('email', 'host').strip("'")
     mail_user = cfg.get('email', 'username').strip("'")
     mail_pass = cfg.get('email', 'password').strip("'")
@@ -30,15 +30,20 @@ def send_mail(cfg, subject='', message='', recipient_list=[], appendix_file=''):
     sender = "TSDS[%s]" % mail_user
 
     msg_root = MIMEMultipart()
-    att_text = MIMEText(message, 'html', 'UTF-8') #解决中文乱码
-    msg_root.attach(att_text)#添加邮件正文
+    # 解决中文乱码
+    att_text = MIMEText(message, 'html', 'UTF-8')
+    # 添加邮件正文
+    msg_root.attach(att_text)
 
-    msg_root['from'] = sender #发件人
-    msg_root['Subject'] = Header(subject, 'utf-8') #邮件标题
-    msg_root['Date'] = time.ctime(time.time()) #设置时间
+    # 发件人
+    msg_root['from'] = sender
+    # 邮件标题
+    msg_root['Subject'] = Header(subject, 'utf-8')
+    # 设置时间
+    msg_root['Date'] = time.ctime(time.time())
     msg_root['To'] = ';'.join(recipient_list)
 
-    #构造附件(附件路径出现中文，会提示编码错误)
+    # 构造附件(附件路径出现中文，会提示编码错误)
     if appendix_file != '':
         rar_file_path = appendix_file
         att = MIMEText(open(rar_file_path, 'rb').read(), 'gbk', 'UTF-8')
@@ -46,10 +51,12 @@ def send_mail(cfg, subject='', message='', recipient_list=[], appendix_file=''):
         att['Content-Disposition'] = 'attachment;filename=%s' % Header(rar_file_path, 'UTF-8')
         msg_root.attach(att)
 
-    #群发邮件
+    # 群发邮件
     smtp = smtplib.SMTP(mail_host, 25)
     smtp.login(mail_user, mail_pass)
 
     smtp.sendmail(sender, recipient_list, msg_root.as_string())
-    time.sleep(2) #休眠5秒
-    smtp.quit() #断开与服务器的连接
+    # 休眠5秒
+    time.sleep(2)
+    # 断开与服务器的连接
+    smtp.quit()

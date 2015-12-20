@@ -15,6 +15,7 @@ def get_current_time(format_str='%Y-%m-%d %H:%M:%S'):
     """获取当前时间"""
     return time.strftime(format_str, time.localtime())
 
+
 def mk_dir(*a, **kw):
     try:
         os.mkdir(*a, **kw)
@@ -52,17 +53,14 @@ def dir_name(path, hierarchy):
     return result_path
 
 
-def create_hook_link(hook_path='', hook_name=[], repository_root=''):
+def create_hook_link(hook_path, hook_name, repository_root):
     """所有的仓库创建钩子文件的链接"""
 
-    repository_list = [os.path.join(repository_root, tmp)
-                       for tmp in os.listdir(repository_root) if os.path.isdir(os.path.join(repository_root, tmp))]
-    for folder_path in repository_list:
-        folder_child = os.listdir(folder_path)
-        for child in folder_child:
-            child_path = os.path.join(folder_path, child)
-            if child_path.endswith('.git'):
-                child_hook_path = os.path.join(child_path, 'hooks')
+    for root_path, dirs, files in os.walk(repository_root):
+        for folder_name in dirs:
+            if folder_name.endswith('.git') and dir_name != '.git':
+                child_hook_path = os.path.join(root_path, folder_name, 'hooks')
+
                 old_hooks = os.listdir(child_hook_path)
                 for old_hook_name in old_hooks:
                     old_hook_path = os.path.join(child_hook_path, old_hook_name)
@@ -72,11 +70,9 @@ def create_hook_link(hook_path='', hook_name=[], repository_root=''):
                         except IOError:
                             pass
                 for hook in hook_name:
-                    hook_link_path = os.path.join(child_path, 'hooks', hook)
+                    hook_link_path = os.path.join(child_hook_path, hook)
                     if not os.path.exists(hook_link_path):
                         os.symlink(os.path.join(hook_path, hook), hook_link_path)
-            elif os.path.isdir(child_path):
-                repository_list.append(child_path)
 
 
 def create_repository_hook_link(repo_path=''):
@@ -86,10 +82,3 @@ def create_repository_hook_link(repo_path=''):
     for hook_name in os.listdir(hook_path):
         os.symlink(os.path.join(hook_path, hook_name), os.path.join(repo_path, 'hooks', hook_name))
 
-
-if __name__ == '__main__':
-    db_connect = DBConnect('192.168.33.106', 'tup', 'root', 'root')
-    insert_sql = "insert into notice_repo_error_issue_key (repo_path, reference_name, committer, push_date, message) " \
-                 "values(%s, %s, %s, %s, %s)"
-    db_connect.execute_many(insert_sql, [('/home/git/repositories/qc8909/platform/build.git', 'refs/heads/master', 'changjie.fan', '2015-02-09 17:26:00', u'/home/git/repositories/qc8909/platform/build.git\nrefs/heads/master\n\\changjie.fan\\2015-02-09 17:26:00\n851b4a12389661c50ed96c912ddb8be4c89473ee\t<REQ><SCM-1><test access>\n\tSCM-1\n9c25e65d67e090a86829e1e0a13c6d7406457b31\t<REQ><SCM-1><test access>\n\tSCM-1\n1bf4febdecae05eda90afdcab48792f351a61bbd\t<REQ><SCM-1><test access>\n\tSCM-1')])
-    db_connect.db_close()

@@ -1,8 +1,9 @@
 #!/usr/bin/env python
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
 __author__ = 'changjie.fan'
 """
-引用级(项目级)的权限控制及提交规范的检查
+1. 检查提交说明是否符合规范
+2. 检查JIRA_KEY是否真实有效，tilte是否在提交说明中
 """
 
 import sys
@@ -10,7 +11,6 @@ import os
 import ConfigParser
 import re
 
-from git_serve.access import have_reference_write_access
 from git_serve.issue import check_issue_key
 from git_serve.git_cmd import GitCmd
 
@@ -27,33 +27,18 @@ def check_commit_msg(repo_path, old_rev, new_rev):
     change_commits = git_cmd.diff_commit(old_rev, new_rev)
     rp = re.compile(pattern)
     error_commit_list = []
-    commit_list = []
+    commit_msg_list = []
     for commit in change_commits:
         m = rp.match(commit.message)
         if m:
-            commit_list.append((commit, m.groups()[1]))
-        #不处理合并Commit
+            commit_msg_list.append((commit, m.groups()[1], m.groups()[2]))
+        # 不处理合并Commit
         elif commit.message.upper().find('MERGE') > -1:
             continue
         else:
-            error_commit_list.append('%s:%s' % (commit.hex_sha, commit.message))
+            error_commit_list.append('%s:%s' % (commit.hex_sha[:8], commit.message))
 
-    return error_commit_list, commit_list
-
-
-def read_config(config_file):
-    """读取git-serve配置文件"""
-
-    cfg = ConfigParser.RawConfigParser()
-    try:
-        conf_file = open(config_file, 'r')
-    except (IOError, OSError), e:
-        pass
-    try:
-        cfg.readfp(conf_file)
-    finally:
-        conf_file.close()
-    return cfg
+    return error_commit_list, commit_msg_list
 
 
 def main(argv):
@@ -66,26 +51,25 @@ def main(argv):
         判断过程：
             1. check_commit_msg方法判断在push的commit中是否有提交说明不符合规范的commit
             2. check_issue_key方法判断提交说明中的ISSUE是否真实有效
-            3. 判断提交权限
     """
 
-    #读取配置文件信息
-    cfg = read_config(os.path.expanduser('~/.git-serve/conf/git-serve.conf'))
+    # 读取配置文件信息
+    cfg = ConfigParser.RawConfigParser()
+    cfg.read(os.path.expanduser('~/.git-serve/conf/git-serve.conf'))
 
-    #当前进行的提交的用户名称, 由ssh处理脚本通过环境变量传递过来
+    # 当前进行的提交的用户名称, 由ssh处理脚本通过环境变量传递过来
     git_user = os.getenv('git_user')
-    #当前提交仓库的相对路径, 由ssh处理脚本通过环境变量传递过来
+    # 当前提交仓库的相对路径, 由ssh处理脚本通过环境变量传递过来
     repo_path = os.getenv('access_repo_path')
-    full_repo_path = os.path.join('/home/git/repositories', repo_path+'.git')
 
     reference_name = argv[1]
     old_rev = argv[2]
     new_rev = argv[3]
 
-    #检查提交说明是否符合规范
-    #新tag和删除tag不检查
+    # 检查提交说明是否符合规范
+    # 新tag和删除tag不检查
     if old_rev != '0'*40 and new_rev != '0'*40:
-        (error_commit_list, commit_list) = check_commit_msg(full_repo_path, old_rev, new_rev)
+        error_commit_list, commit_msg_list = check_commit_msg(repo_path, old_rev, new_rev)
         if error_commit_list:
             print "\033[43;31;1m以下Commit的说明不符合规范:\033[0m\n"
 
@@ -97,21 +81,15 @@ def main(argv):
             print '\033[34m标准规范是:<REQ|BUG|FUNC|PATCH|DEBUG><JIRA_KEY><项目tag:说明>\033[0m'
             sys.exit(1)
 
-        #检查提交说明中的ISSUE_KEY是否真实有效
-        (result, message) = check_issue_key(cfg, git_user, reference_name, full_repo_path, commit_list)
-        #ISSUE KEY正确
+        # 检查提交说明中的ISSUE_KEY是否真实有效已经说明中是否包含jira_title
+        result, message = check_issue_key(cfg, commit_msg_list)
+        # ISSUE KEY正确
         if not result:
             print "\033[43;31;1mJIRA_KEY在jira数据库中不存在\033[0m\n"
             print "\033[34m%s\033[0m" % message
             sys.exit(1)
 
-    #检查提交权限
-    (result, message) = have_reference_write_access(cfg, git_user, reference_name, repo_path)
-    if not result:
-        print message
-        sys.exit(1)
-
-    #正常退出
+    # 正常退出
     sys.exit(0)
 
 if __name__ == '__main__':

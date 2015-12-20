@@ -99,6 +99,22 @@ def main():
                 cfg.get('repository', 'root_path').replace('/git/', '/%s/' % current_user_name))
         cfg.write(open(config_file_path, 'w'))
 
+    # 拷贝hooks目录
+    src_path = 'git_serve/hooks'
+    src_file_names = os.listdir(src_path)
+    dst_path = os.path.join(current_user_dir, '.git-serve/hooks')
+    if not os.path.exists(dst_path):
+        os.mkdir(dst_path)
+
+    for src_file_name in src_file_names:
+        src_file = os.path.join(src_path, src_file_name)
+        dst_file = os.path.join(dst_path, src_file_name)
+        if os.path.exists(dst_file):
+            if not os.path.samefile(src_file, dst_file):
+                shutil.copy2(src_file, dst_file)
+        else:
+            shutil.copy2(src_file, dst_file)
+
     # 修改.git的权限
     status, info = commands.getstatusoutput('sudo chown -R %s:%s %s ' %
                                             (current_user_name, current_user_name, os.path.dirname(log_dir)))

@@ -2,7 +2,7 @@
 __author__ = 'changjie.fan'
 
 """"""
-from MySQLdb import connect
+from MySQLdb import connect, OperationalError
 
 
 class DBConnect:
@@ -33,3 +33,9 @@ class DBConnect:
 
         self.cursor.execute(insert_sql)
         self.conn.commit()
+
+if __name__ == '__main__':
+    try:
+        db = DBConnect('192.168.33.6', 'tms', 'root', 'root')
+    except OperationalError, e:
+        print e

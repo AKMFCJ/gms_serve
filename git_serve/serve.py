@@ -6,11 +6,15 @@ git-serve的入口程序控制，仓库级的读写权限
 import logging
 import os
 import sys
+from simplejson import dumps as json_dumps
 
 from git_serve.app import App
 from git_serve.access import read_permission_config
 from git_serve.utils.Mylogging import logger
 from git_serve.utils.DBConnect import DBConnect
+
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 
 COMMANDS_READONLY = ['git-upload-pack', 'git upload-pack', ]
@@ -134,7 +138,7 @@ class Main(App):
             # 提交的用户名称, 配置在~/.ssh/authorized_keys中
             os.putenv('git_user', user)
             # 仓库的权限配置
-            os.putenv('permission_config', permission_config)
+            os.putenv('permission_config', json_dumps(permission_config))
             # 仓库完整的绝对路径
             os.putenv('access_repo_path', access_repo_path)
 

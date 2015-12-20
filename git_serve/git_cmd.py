@@ -7,13 +7,13 @@ from git import *
 import commands
 
 
-class CommitObj():
+class CommitObj:
     def __init__(self, message='', hex_sha=''):
         self.message = message
         self.hex_sha = hex_sha
 
 
-class GitCmd():
+class GitCmd:
     def __init__(self, repo_path=''):
         self.repo_path = repo_path
         self.repo = Repo(repo_path)
